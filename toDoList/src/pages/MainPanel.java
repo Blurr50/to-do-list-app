@@ -38,12 +38,10 @@ public class MainPanel extends JPanel {
 	}
 
 	public void setWelcomeLabelText(String text) {
-		// WHY DID THIS TAKE AN HOUR TO FIGURE OUT
 		welcomeLabel.setText(text);
 	}
 
 	public void setInviteCodeText(String text) {
-		// WHY DID THIS TAKE AN HOUR TO FIGURE OUT
 		inviteCode.setText(text);
 	}
 

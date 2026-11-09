@@ -9,6 +9,11 @@ public class LoginPanel extends JPanel {
 	private JPasswordField passwordField;
 
 	public LoginPanel(app.AppFrame frame) {
+		
+		/*
+		 * Obselete code, replaced by ToDodoLogin.java
+		 * this remains as a reference if necessary later
+		 */
 		setLayout(null); // placeholder for now, will change to a better layout later
 
 		JLabel usernameLabel = new JLabel("Username:");
