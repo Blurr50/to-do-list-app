@@ -9,7 +9,8 @@ public class MainPanel extends JPanel {
 	// add necessary fields
 	private JLabel welcomeLabel;
 	private JLabel inviteCode;
-
+	private final DefaultListModel<String> taskModel = new DefaultListModel<>();
+	
 	public MainPanel(app.AppFrame frame) {
 		setLayout(null); // placeholder for now, will change to a better layout later
 
@@ -35,8 +36,23 @@ public class MainPanel extends JPanel {
 		logOutBtn.setBounds(10, 10, 120, 30);
 		logOutBtn.addActionListener(e -> frame.showPage(app.AppFrame.LOGIN));
 		add(logOutBtn);
+	
+		JScrollPane taskScroll = new JScrollPane(new JList<>(taskModel));
+		taskScroll.setBounds(20, 150, 540, 190);
+		add(taskScroll);
+	
+		
 	}
 
+	
+	public void refreshTasks(model.User user) {
+	    taskModel.clear();
+	    for (model.Task t : new database.TaskDAO().getTasksForUser(user.id())) {
+	        taskModel.addElement((t.complete() ? "[x] " : "[ ] ") + t.title());
+	    }
+	}
+	
+	
 	public void setWelcomeLabelText(String text) {
 		welcomeLabel.setText(text);
 	}
