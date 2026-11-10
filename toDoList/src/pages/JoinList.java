@@ -1,7 +1,8 @@
-package page;
+package pages;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
@@ -16,8 +17,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
@@ -30,7 +33,7 @@ import javax.swing.text.DocumentFilter;
  * To-Dodo List - "Join a to-do list" screen (Swing / WindowBuilder).
  * Images are loaded from the classpath: src/images/dodo.png and src/images/team.png
  */
-public class JoinList extends JFrame {
+public class JoinList extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
@@ -52,29 +55,13 @@ public class JoinList extends JFrame {
 	private JPanel contentPane;
 	private JTextField txtCode1, txtCode2, txtCode3, txtCode4, txtCode5, txtCode6;
 
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-					JoinList frame = new JoinList();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
-	public JoinList() {
-		setTitle("To-Dodo List - Join");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1222, 780);
-		setLocationRelativeTo(null);
+	public JoinList(app.AppFrame frame) {
+		frame.setTitle("To-Dodo List - Join");
 		contentPane = new JPanel();
 		contentPane.setBackground(RIGHT_BG);
+		contentPane.setPreferredSize(new Dimension(1219, 882));
 		contentPane.setLayout(null);
-		setContentPane(contentPane);
 
 		// =============== LEFT PANEL ===============
 		JPanel leftPanel = new JPanel();
@@ -362,6 +349,7 @@ public class JoinList extends JFrame {
 		btnGenerate.setFocusPainted(false);
 		btnGenerate.setBorder(new LineBorder(GOLD, 1, true));
 		btnGenerate.setBounds(14, 132, 276, 36);
+		btnGenerate.addActionListener(e -> {frame.showPage(app.AppFrame.INVITE_READY);});
 		cardPanel.add(btnGenerate);
 
 		// ---- Already a member ----
@@ -391,6 +379,17 @@ public class JoinList extends JFrame {
 		lblTerms.setFont(new Font(FONT, Font.PLAIN, 9));
 		lblTerms.setBounds(450, 705, 40, 14);
 		rightPanel.add(lblTerms);
+		
+		JScrollPane scrollPane = new JScrollPane(contentPane);
+		scrollPane.setBorder(null);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+		scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
+		scrollPane.getViewport().setBackground(RIGHT_BG);
+
+		setLayout(new java.awt.BorderLayout());
+		add(scrollPane, java.awt.BorderLayout.CENTER);
 	}
 
 	/** Styles one invite-code box and wires up typing behaviour. */
@@ -446,4 +445,5 @@ public class JoinList extends JFrame {
 		ImageIcon raw = new ImageIcon(url);
 		return new ImageIcon(raw.getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH));
 	}
+
 }

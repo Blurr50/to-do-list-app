@@ -31,12 +31,14 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
 /**
  * To-Dodo List - main "Team to-do list" screen (Swing / WindowBuilder).
  * Images are loaded from the classpath: src/images/dodo.png
  */
-public class TeamTodoList extends JFrame {
+public class TeamTodoList extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
@@ -59,30 +61,14 @@ public class TeamTodoList extends JFrame {
 	private JPanel contentPane;
 	private JPanel rowsPanel;
 	private JLabel lblShowing;
+	private JLabel lblInviteCode;
 
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-					TeamTodoList frame = new TeamTodoList();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	public TeamTodoList() {
-		setTitle("To-Dodo List - Team to-do list");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1235, 921);
-		setLocationRelativeTo(null);
+	public TeamTodoList(app.AppFrame frame) {
+		frame.setTitle("To-Dodo List - Team to-do list");
 		contentPane = new JPanel();
 		contentPane.setBackground(PAGE_BG);
 		contentPane.setLayout(null);
-		setContentPane(contentPane);
+		contentPane.setPreferredSize(new Dimension(1219, 882));
 
 		// =============== TOP BAR ===============
 		JPanel topBar = new JPanel();
@@ -122,7 +108,7 @@ public class TeamTodoList extends JFrame {
 		lblInviteCaption.setBounds(13, 7, 100, 12);
 		invitePanel.add(lblInviteCaption);
 
-		JLabel lblInviteCode = new JLabel("67DODO");
+		lblInviteCode = new JLabel("67DODO");
 		lblInviteCode.setForeground(DARK);
 		lblInviteCode.setFont(new Font(FONT, Font.BOLD, 17));
 		lblInviteCode.setBounds(13, 21, 90, 26);
@@ -136,7 +122,7 @@ public class TeamTodoList extends JFrame {
 		lblCopyIcon.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection("67DODO"), null);
+				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(lblInviteCode.getText()), null);
 			}
 		});
 		invitePanel.add(lblCopyIcon);
@@ -271,6 +257,7 @@ public class TeamTodoList extends JFrame {
 		btnAdd.setFocusPainted(false);
 		btnAdd.setBorder(new LineBorder(GOLD, 1, true));
 		btnAdd.setBounds(1099, 123, 96, 37);
+		btnAdd.addActionListener(e -> frame.showPage(app.AppFrame.ADD_TASK));
 		contentPane.add(btnAdd);
 
 		// =============== STATS PANEL ===============
@@ -620,6 +607,17 @@ public class TeamTodoList extends JFrame {
 		lblLess.setFont(new Font(FONT, Font.ITALIC, 8));
 		lblLess.setBounds(982, 724, 213, 14);
 		contentPane.add(lblLess);
+		
+		JScrollPane scrollPane = new JScrollPane(contentPane);
+		scrollPane.setBorder(null);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+		scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
+		scrollPane.getViewport().setBackground(PAGE_BG);
+
+		setLayout(new java.awt.BorderLayout());
+		add(scrollPane, java.awt.BorderLayout.CENTER);
 	}
 
 	private void updateShowing() {
@@ -830,5 +828,13 @@ public class TeamTodoList extends JFrame {
 				}
 			});
 		}
+	}
+	public void setWelcomeLabelText(String text) {
+		
+		//lblWelcomeLabel.setText(text);
+	}
+
+	public void setInviteCodeText(String text) {
+		lblInviteCode.setText(text);
 	}
 }

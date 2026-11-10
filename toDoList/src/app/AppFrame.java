@@ -18,6 +18,7 @@ public class AppFrame extends JFrame {
 
 	public static final String LOGIN = "login";
 	public static final String CREATE_ACCOUNT = "createAccount";
+	public static final String INVITE_READY = "inviteReady";
 	public static final String MAIN = "main";
 	public static final String ADD_TASK = "addTask";
 
@@ -25,21 +26,21 @@ public class AppFrame extends JFrame {
 	private final JPanel root = new JPanel(cards);
 
 	// Keep direct references instead of root.getComponent(index)
-	private final MainPanel mainPanel;
+	private final pages.TeamTodoList teamTodoList;
 
 	public AppFrame() {
-		setTitle("To-Dodo List");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(1303, 760);
 		setLocationRelativeTo(null);
 
 		// Register every page with a name
-		mainPanel = new MainPanel(this);
+		teamTodoList = new pages.TeamTodoList(this);
 
 		root.add(new ToDodoLogin(this), LOGIN);
-		root.add(new CreateAccountPanel(this), CREATE_ACCOUNT);
-		root.add(mainPanel, MAIN);
-		root.add(new AddTaskPanel(this), ADD_TASK);
+		root.add(new pages.JoinList(this), CREATE_ACCOUNT);
+		root.add(new pages.InviteReady(this), INVITE_READY);
+		root.add(teamTodoList, MAIN);
+		root.add(new pages.AddTask(this), ADD_TASK);
 
 		setContentPane(root);
 
@@ -53,11 +54,11 @@ public class AppFrame extends JFrame {
 	}
 
 	public void setWelcomeLabelText(String text) {
-		mainPanel.setWelcomeLabelText(text);
+		teamTodoList.setWelcomeLabelText(text);
 	}
 
 	public void setInviteCodeText(String text) {
-		mainPanel.setInviteCodeText(text);
+		teamTodoList.setInviteCodeText(text);
 	}
 
 	public static void main(String[] args) {

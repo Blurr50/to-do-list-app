@@ -1,8 +1,9 @@
-package page;
+package pages;
 
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -29,6 +30,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
@@ -40,7 +42,7 @@ import javax.swing.border.MatteBorder;
  * To-Dodo List - "Add task" screen (Swing / WindowBuilder).
  * Images are loaded from the classpath: src/images/dodo.png
  */
-public class AddTask extends JFrame {
+public class AddTask extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
@@ -69,29 +71,13 @@ public class AddTask extends JFrame {
 	private JComboBox<String> cmbPriority;
 	private JComboBox<String> cmbStatus;
 
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-					AddTask frame = new AddTask();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
-	public AddTask() {
-		setTitle("To-Dodo List - Add task");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1229, 871);
-		setLocationRelativeTo(null);
+	public AddTask(app.AppFrame frame) {
+		frame.setTitle("To-Dodo List - Add task");
 		contentPane = new JPanel();
 		contentPane.setBackground(PAGE_BG);
+		contentPane.setPreferredSize(new Dimension(1219, 882));
 		contentPane.setLayout(null);
-		setContentPane(contentPane);
 
 		// =============== TOP BAR ===============
 		JPanel topBar = new JPanel();
@@ -265,6 +251,8 @@ public class AddTask extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				// TODO: open your TeamTodoList screen here, e.g.
 				// new TeamTodoList().setVisible(true); dispose();
+				frame.showPage(app.AppFrame.MAIN);
+
 			}
 		});
 		contentPane.add(lblBack);
@@ -446,7 +434,6 @@ public class AddTask extends JFrame {
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				clearForm();
-				// TODO: go back to the TeamTodoList screen
 			}
 		});
 		formCard.add(btnCancel);
@@ -560,6 +547,17 @@ public class AddTask extends JFrame {
 		lblLess.setFont(new Font(FONT, Font.ITALIC, 8));
 		lblLess.setBounds(976, 619, 212, 14);
 		contentPane.add(lblLess);
+		
+		JScrollPane scrollPane = new JScrollPane(contentPane);
+		scrollPane.setBorder(null);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+		scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
+		scrollPane.getViewport().setBackground(PAGE_BG);
+
+		setLayout(new java.awt.BorderLayout());
+		add(scrollPane, java.awt.BorderLayout.CENTER);
 	}
 
 	// =====================================================================

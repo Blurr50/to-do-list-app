@@ -1,6 +1,7 @@
-package page;
+package pages;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
@@ -14,6 +15,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.UIManager;
@@ -23,7 +26,7 @@ import javax.swing.border.LineBorder;
  * To-Dodo List - "Your team list is ready" screen (Swing / WindowBuilder).
  * Images are loaded from the classpath: src/images/dodo.png and src/images/team.png
  */
-public class InviteReady extends JFrame {
+public class InviteReady extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
@@ -46,29 +49,13 @@ public class InviteReady extends JFrame {
 	private JPanel contentPane;
 	private JLabel lblInviteCode;
 
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-					InviteReady frame = new InviteReady();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
-	public InviteReady() {
-		setTitle("To-Dodo List - Invite ready");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1222, 772);
-		setLocationRelativeTo(null);
+	public InviteReady(app.AppFrame frame) {
+		frame.setTitle("To-Dodo List - Invite ready");
 		contentPane = new JPanel();
 		contentPane.setBackground(RIGHT_BG);
+		contentPane.setPreferredSize(new Dimension(1219, 882));
 		contentPane.setLayout(null);
-		setContentPane(contentPane);
 
 		// =============== LEFT PANEL ===============
 		JPanel leftPanel = new JPanel();
@@ -299,6 +286,12 @@ public class InviteReady extends JFrame {
 		btnGo.setFocusPainted(false);
 		btnGo.setBorder(new LineBorder(GOLD, 1, true));
 		btnGo.setBounds(fx, 539, fw, 38);
+		btnGo.addActionListener(e -> {
+			
+			// TODO: real authentication here
+			frame.setWelcomeLabelText("Welcome back, " + "!");
+			frame.showPage(app.AppFrame.MAIN);
+		});
 		rightPanel.add(btnGo);
 
 		JLabel lblNoWait = new JLabel("No need to wait \u2014 start your first task now.");
@@ -326,6 +319,17 @@ public class InviteReady extends JFrame {
 		lblTerms.setFont(new Font(FONT, Font.PLAIN, 9));
 		lblTerms.setBounds(449, 708, 40, 14);
 		rightPanel.add(lblTerms);
+		
+		JScrollPane scrollPane = new JScrollPane(contentPane);
+		scrollPane.setBorder(null);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+		scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
+		scrollPane.getViewport().setBackground(RIGHT_BG);
+
+		setLayout(new java.awt.BorderLayout());
+		add(scrollPane, java.awt.BorderLayout.CENTER);
 	}
 
 	/** Call this to show a real generated code (e.g. from the previous screen). */

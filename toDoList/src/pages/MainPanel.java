@@ -3,6 +3,10 @@ package pages;
 import javax.swing.*;
 
 public class MainPanel extends JPanel {
+	
+	/*
+	 * Obsolete class, replaced by TeamTodoList.java. Keeping for reference.
+	 */
 
 	private static final long serialVersionUID = 1L;
 

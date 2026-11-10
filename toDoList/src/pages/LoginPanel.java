@@ -73,7 +73,7 @@ public class LoginPanel extends JPanel {
 		// check if the username and password are correct
 		// probabaly should use key value pair to store the username and password in a
 		// database
-
+		
 		return false;
 	}
 
