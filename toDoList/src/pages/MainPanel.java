@@ -9,7 +9,8 @@ public class MainPanel extends JPanel {
 	// add necessary fields
 	private JLabel welcomeLabel;
 	private JLabel inviteCode;
-	private final DefaultListModel<String> taskModel = new DefaultListModel<>();
+	private final DefaultListModel<String> taskModel = new DefaultListModel<String>();
+	private JList<String> taskList;
 	
 	public MainPanel(app.AppFrame frame) {
 		setLayout(null); // placeholder for now, will change to a better layout later
@@ -34,10 +35,15 @@ public class MainPanel extends JPanel {
 
 		JButton logOutBtn = new JButton("Log out");
 		logOutBtn.setBounds(10, 10, 120, 30);
-		logOutBtn.addActionListener(e -> frame.showPage(app.AppFrame.LOGIN));
+		logOutBtn.addActionListener(e -> {
+			frame.setCurrentUser(null);
+			taskModel.clear();
+			frame.showPage(app.AppFrame.LOGIN);
+		});
 		add(logOutBtn);
 	
-		JScrollPane taskScroll = new JScrollPane(new JList<>(taskModel));
+		taskList = new JList<String>(taskModel);
+		JScrollPane taskScroll = new JScrollPane(taskList);
 		taskScroll.setBounds(20, 150, 540, 190);
 		add(taskScroll);
 	
