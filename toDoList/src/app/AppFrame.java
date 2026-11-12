@@ -16,6 +16,9 @@ public class AppFrame extends JFrame {
 	private final CardLayout cards = new CardLayout();
 	private final JPanel root = new JPanel(cards);
 
+	private model.User currentUser;
+	private pages.MainPanel mainPanel;
+	
 	public AppFrame() {
 		setTitle("My App");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -34,20 +37,28 @@ public class AppFrame extends JFrame {
 	}
 
 	// show a page by calling frame.showPage("pageName")
-	public void showPage(String name) {
-		cards.show(root, name);
-	}
+		public void showPage(String name) {
+			cards.show(root, name);
+		}
 
-	public void setWelcomeLabelText(String text) {
-		// Get the MainPanel instance and update the welcome label
-		pages.MainPanel mainPanel = (pages.MainPanel) root.getComponent(2); // Assuming MainPanel is the third component
-																			// added
-		mainPanel.setWelcomeLabelText(text);
-	}
+		public void setWelcomeLabelText(String text) {
+			mainPanel.setWelcomeLabelText(text);
+		}
 
-	public void setInviteCodeText(String text) {
-		pages.MainPanel mainPanel = (pages.MainPanel) root.getComponent(2);
-		mainPanel.setInviteCodeText(text);
-	}
+		public void setInviteCodeText(String text) {
+			mainPanel.setInviteCodeText(text);
+		}
 
-}
+		public void setCurrentUser(model.User user) {
+			this.currentUser = user;
+		}
+
+		public model.User getCurrentUser() {
+			return currentUser;
+		}
+
+		public void refreshTasks() {
+			mainPanel.refreshTasks(currentUser);
+		}
+
+	}
