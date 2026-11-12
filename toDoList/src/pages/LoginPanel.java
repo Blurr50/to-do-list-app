@@ -9,10 +9,10 @@ public class LoginPanel extends JPanel {
 	private JPasswordField passwordField;
 
 	public LoginPanel(app.AppFrame frame) {
-		
+
 		/*
-		 * Obselete code, replaced by ToDodoLogin.java
-		 * this remains as a reference if necessary later
+		 * Obselete code, replaced by ToDodoLogin.java this remains as a reference if
+		 * necessary later
 		 */
 		setLayout(null); // placeholder for now, will change to a better layout later
 
@@ -34,7 +34,7 @@ public class LoginPanel extends JPanel {
 
 		JButton loginBtn = new JButton("Sign in");
 		loginBtn.setBounds(200, 180, 95, 30);
-		loginBtn.addActionListener(e -> handleLogin(frame));
+		// loginBtn.addActionListener(e -> handleLogin(frame));
 		add(loginBtn);
 
 		JButton createBtn = new JButton("Create account");
@@ -48,7 +48,7 @@ public class LoginPanel extends JPanel {
 		// check if the username and password are correct
 		// probabaly should use key value pair to store the username and password in a
 		// database
-		
+
 		return false;
 	}
 

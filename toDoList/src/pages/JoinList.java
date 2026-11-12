@@ -132,12 +132,6 @@ public class JoinList extends JPanel {
 		final int fx = 115;   // form left
 		final int fw = 306;   // form width
 
-		JLabel lblHelp = new JLabel("\u24D8  Need a hand?");
-		lblHelp.setForeground(MUTED);
-		lblHelp.setFont(new Font(FONT, Font.PLAIN, 10));
-		lblHelp.setBounds(398, 30, 110, 16);
-		rightPanel.add(lblHelp);
-
 		JLabel lblEyebrow = new JLabel("\u2014  JOIN A TO-DO LIST");
 		lblEyebrow.setForeground(LIGHT);
 		lblEyebrow.setFont(new Font(FONT, Font.BOLD, 9));
@@ -249,6 +243,9 @@ public class JoinList extends JPanel {
 		});
 		rightPanel.add(btnJoin);
 
+		
+		
+		//REPLACE WITH LOGIN DETAILS
 		// ---- Divider: scan ----
 		JSeparator sepScanL = new JSeparator();
 		sepScanL.setForeground(BORDER);
@@ -359,6 +356,11 @@ public class JoinList extends JPanel {
 		lblMember.setFont(new Font(FONT, Font.PLAIN, 10));
 		lblMember.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		lblMember.setBounds(fx, 676, fw, 16);
+		lblMember.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				frame.showPage(app.AppFrame.LOGIN);
+			}
+		});
 		rightPanel.add(lblMember);
 
 		// ---- Footer ----

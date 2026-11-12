@@ -39,27 +39,27 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
 
 /**
- * To-Dodo List - "Add task" screen (Swing / WindowBuilder).
- * Images are loaded from the classpath: src/images/dodo.png
+ * To-Dodo List - "Add task" screen (Swing / WindowBuilder). Images are loaded
+ * from the classpath: src/images/dodo.png
  */
 public class AddTask extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
 	// Palette
-	private static final Color PAGE_BG    = new Color(0xFE, 0xFD, 0xF8);
-	private static final Color CREAM      = new Color(0xF6, 0xF3, 0xE8);
-	private static final Color CREAM_SEL  = new Color(0xED, 0xE4, 0xB8);
-	private static final Color DARK       = new Color(0x37, 0x3B, 0x30);
-	private static final Color BODY       = new Color(0x5E, 0x61, 0x58);
-	private static final Color MUTED      = new Color(0x8A, 0x8D, 0x93);
-	private static final Color LIGHT      = new Color(0xA9, 0xAB, 0xB3);
-	private static final Color BORDER     = new Color(0xE6, 0xE4, 0xDA);
+	private static final Color PAGE_BG = new Color(0xFE, 0xFD, 0xF8);
+	private static final Color CREAM = new Color(0xF6, 0xF3, 0xE8);
+	private static final Color CREAM_SEL = new Color(0xED, 0xE4, 0xB8);
+	private static final Color DARK = new Color(0x37, 0x3B, 0x30);
+	private static final Color BODY = new Color(0x5E, 0x61, 0x58);
+	private static final Color MUTED = new Color(0x8A, 0x8D, 0x93);
+	private static final Color LIGHT = new Color(0xA9, 0xAB, 0xB3);
+	private static final Color BORDER = new Color(0xE6, 0xE4, 0xDA);
 	private static final Color FIELD_LINE = new Color(0xE2, 0xE3, 0xE6);
-	private static final Color GOLD       = new Color(0xE0, 0xC9, 0x7F);
-	private static final Color GOLD_LINE  = new Color(0xEB, 0xDF, 0xAE);
-	private static final Color GOLD_DARK  = new Color(0x6B, 0x5A, 0x2A);
-	private static final Color OLIVE      = new Color(0x4A, 0x50, 0x3C);
+	private static final Color GOLD = new Color(0xE0, 0xC9, 0x7F);
+	private static final Color GOLD_LINE = new Color(0xEB, 0xDF, 0xAE);
+	private static final Color GOLD_DARK = new Color(0x6B, 0x5A, 0x2A);
+	private static final Color OLIVE = new Color(0x4A, 0x50, 0x3C);
 
 	private static final String FONT = "Segoe UI";
 	private static final String EMOJI = "Segoe UI Emoji";
@@ -70,7 +70,6 @@ public class AddTask extends JPanel {
 	private JComboBox<String> cmbDue;
 	private JComboBox<String> cmbPriority;
 	private JComboBox<String> cmbStatus;
-
 
 	public AddTask(app.AppFrame frame) {
 		frame.setTitle("To-Dodo List - Add task");
@@ -97,12 +96,6 @@ public class AddTask extends JPanel {
 		lblBrand.setFont(new Font(FONT, Font.BOLD, 21));
 		lblBrand.setBounds(66, 18, 200, 32);
 		topBar.add(lblBrand);
-
-		JLabel lblHelp = new JLabel("\u24D8  Need a hand?");
-		lblHelp.setForeground(BODY);
-		lblHelp.setFont(new Font(FONT, Font.PLAIN, 10));
-		lblHelp.setBounds(908, 26, 110, 16);
-		topBar.add(lblHelp);
 
 		JPanel invitePanel = new JPanel();
 		invitePanel.setBackground(new Color(0xF6, 0xF0, 0xD6));
@@ -314,7 +307,8 @@ public class AddTask extends JPanel {
 		lblHint.setBounds(25, 134, 300, 13);
 		formCard.add(lblHint);
 
-		JLabel lblDescription = new JLabel("<html>Description <span style='color:#8A8D93;font-weight:normal'>(optional)</span></html>");
+		JLabel lblDescription = new JLabel(
+				"<html>Description <span style='color:#8A8D93;font-weight:normal'>(optional)</span></html>");
 		lblDescription.setForeground(DARK);
 		lblDescription.setFont(new Font(FONT, Font.BOLD, 9));
 		lblDescription.setBounds(25, 165, 300, 14);
@@ -447,8 +441,9 @@ public class AddTask extends JPanel {
 		btnAddTask.setBounds(620, 484, 98, 36);
 		btnAddTask.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				addTask();
+				addTask(frame);
 			}
+
 		});
 		formCard.add(btnAddTask);
 
@@ -479,7 +474,8 @@ public class AddTask extends JPanel {
 		lblInspoTitle.setBounds(16, 43, 190, 50);
 		inspoCard.add(lblInspoTitle);
 
-		JLabel lblInspoText = new JLabel("<html>A good task is one clear next step. Give it a name that tells you exactly where to begin.</html>");
+		JLabel lblInspoText = new JLabel(
+				"<html>A good task is one clear next step. Give it a name that tells you exactly where to begin.</html>");
 		lblInspoText.setVerticalAlignment(SwingConstants.TOP);
 		lblInspoText.setForeground(BODY);
 		lblInspoText.setFont(new Font(FONT, Font.PLAIN, 8));
@@ -547,7 +543,7 @@ public class AddTask extends JPanel {
 		lblLess.setFont(new Font(FONT, Font.ITALIC, 8));
 		lblLess.setBounds(976, 619, 212, 14);
 		contentPane.add(lblLess);
-		
+
 		JScrollPane scrollPane = new JScrollPane(contentPane);
 		scrollPane.setBorder(null);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -564,19 +560,29 @@ public class AddTask extends JPanel {
 	// Behaviour
 	// =====================================================================
 
-	private void addTask() {
+	private void addTask(app.AppFrame frame) {
 		String title = txtTitle.getText().trim();
 		if (title.isEmpty()) {
 			JOptionPane.showMessageDialog(this, "Please give your task a title.");
-			txtTitle.requestFocusInWindow();
 			return;
 		}
-		// TODO: save the task in your list / database
-		String summary = "Task added!\n\nTitle: " + title
-				+ "\nDescription: " + txtDescription.getText().trim()
-				+ "\nDue: " + cmbDue.getSelectedItem()
-				+ "\nPriority: " + cmbPriority.getSelectedItem()
-				+ "\nStatus: " + cmbStatus.getSelectedItem();
+
+		String taskName = txtTitle.getText();
+		String taskDescription = txtDescription.getText();
+		if (taskName.trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Please give your task a title.");
+			txtTitle.requestFocusInWindow();
+
+			return;
+		}
+
+		model.User me = frame.getCurrentUser();
+		new database.TaskDAO().addTask(taskName.trim(), taskDescription, me.id(), null, me.teamId());
+		frame.refreshTasks("ALL");
+
+		String summary = "Task added!\n\nTitle: " + title + "\nDescription: " + txtDescription.getText().trim()
+				+ "\nDue: " + cmbDue.getSelectedItem() + "\nPriority: " + cmbPriority.getSelectedItem() + "\nStatus: "
+				+ cmbStatus.getSelectedItem();
 		JOptionPane.showMessageDialog(this, summary);
 		clearForm();
 	}
@@ -589,7 +595,9 @@ public class AddTask extends JPanel {
 		cmbStatus.setSelectedIndex(0);
 	}
 
-	/** Gives a drop-down the white, rounded look and room for the icon on its left. */
+	/**
+	 * Gives a drop-down the white, rounded look and room for the icon on its left.
+	 */
 	private void styleCombo(JComboBox<String> combo) {
 		combo.setBackground(Color.WHITE);
 		combo.setFont(new Font(FONT, Font.PLAIN, 10));
@@ -598,16 +606,19 @@ public class AddTask extends JPanel {
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public Component getListCellRendererComponent(JList<?> list, Object value, int index,
-					boolean isSelected, boolean cellHasFocus) {
-				JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+					boolean cellHasFocus) {
+				JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected,
+						cellHasFocus);
 				label.setBorder(new EmptyBorder(0, 28, 0, 0));
 				return label;
 			}
 		});
 	}
 
-	/** Loads an image from the classpath (src/images/...) and scales it smoothly. */
+	/**
+	 * Loads an image from the classpath (src/images/...) and scales it smoothly.
+	 */
 	private static ImageIcon scaled(String path, int w, int h) {
 		java.net.URL url = AddTask.class.getResource("/" + path);
 		if (url == null) {

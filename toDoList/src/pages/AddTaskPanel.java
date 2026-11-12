@@ -48,7 +48,7 @@ public class AddTaskPanel extends JPanel {
 			}
 			model.User me = frame.getCurrentUser();
 			new database.TaskDAO().addTask(taskName.trim(), taskDescription, me.id(), null, me.teamId());
-			frame.refreshTasks();
+			frame.refreshTasks("ALL");
 
 			JOptionPane.showMessageDialog(this, "Task added successfully!");
 

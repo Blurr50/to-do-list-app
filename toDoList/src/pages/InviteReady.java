@@ -126,12 +126,6 @@ public class InviteReady extends JPanel {
 		final int fx = 115;   // form left
 		final int fw = 306;   // form width
 
-		JLabel lblHelp = new JLabel("\u24D8  Need a hand?");
-		lblHelp.setForeground(MUTED);
-		lblHelp.setFont(new Font(FONT, Font.PLAIN, 10));
-		lblHelp.setBounds(397, 26, 110, 16);
-		rightPanel.add(lblHelp);
-
 		JLabel lblCheckBadge = new JLabel("\u2714");
 		lblCheckBadge.setHorizontalAlignment(SwingConstants.CENTER);
 		lblCheckBadge.setOpaque(true);
@@ -216,7 +210,9 @@ public class InviteReady extends JPanel {
 		});
 		rightPanel.add(btnCopyLink);
 
-		// ---- QR card ----
+		// ---- QR code ----
+		//REMOVE AND REPLACE WITH USERNAME AND PASSWORD LOGIN DETAILS
+		
 		JPanel qrCard = new JPanel();
 		qrCard.setBackground(Color.WHITE);
 		qrCard.setBorder(new LineBorder(BORDER, 1, true));
