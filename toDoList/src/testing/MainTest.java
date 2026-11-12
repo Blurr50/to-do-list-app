@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assumptions.assumeFalse;
  
 import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
+import java.io.File;
 import java.util.Arrays;
  
 import javax.swing.SwingUtilities;
@@ -16,6 +17,15 @@ import org.junit.jupiter.api.Test;
  
 class MainTest {
  
+	@BeforeEach
+	void useTempDatabase() throws Exception {
+		// keep tests away from the real tasks.db
+		File f = File.createTempFile("test", ".db");
+		f.deleteOnExit();
+		database.DatabaseManager.setUrl("jdbc:sqlite:" + f.getAbsolutePath());
+	}
+	
+
 	@BeforeEach
 	void requireDisplay() {
 		// Swing frames can't be created on a headless machine (e.g. CI without a display)

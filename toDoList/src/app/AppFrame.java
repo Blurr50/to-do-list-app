@@ -60,6 +60,15 @@ public class AppFrame extends JFrame {
 	public void setInviteCodeText(String text) {
 		teamTodoList.setInviteCodeText(text);
 	}
+	public void refreshTasks(String page) {
+		teamTodoList.refreshTasks(page);
+	}
+	public model.User getCurrentUser() {
+		return teamTodoList.getCurrentUser();
+	}
+	public void setCurrentUser(model.User user) {
+		teamTodoList.setCurrentUser(user);
+	}
 
 	public static void main(String[] args) {
 		// Set Look and Feel BEFORE creating any Swing components

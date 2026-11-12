@@ -35,25 +35,25 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
 /**
- * To-Dodo List - main "Team to-do list" screen (Swing / WindowBuilder).
- * Images are loaded from the classpath: src/images/dodo.png
+ * To-Dodo List - main "Team to-do list" screen (Swing / WindowBuilder). Images
+ * are loaded from the classpath: src/images/dodo.png
  */
 public class TeamTodoList extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
 	// Palette
-	private static final Color PAGE_BG    = new Color(0xFE, 0xFD, 0xF8);
-	private static final Color CREAM      = new Color(0xF6, 0xF3, 0xE8);
-	private static final Color CREAM_SEL  = new Color(0xED, 0xE4, 0xB8);
-	private static final Color DARK       = new Color(0x37, 0x3B, 0x30);
-	private static final Color BODY       = new Color(0x5E, 0x61, 0x58);
-	private static final Color MUTED      = new Color(0x8A, 0x8D, 0x93);
-	private static final Color BORDER     = new Color(0xE6, 0xE4, 0xDA);
-	private static final Color GOLD       = new Color(0xE0, 0xC9, 0x7F);
-	private static final Color GOLD_LINE  = new Color(0xEB, 0xDF, 0xAE);
-	private static final Color GOLD_DARK  = new Color(0x6B, 0x5A, 0x2A);
-	private static final Color OLIVE      = new Color(0x4A, 0x50, 0x3C);
+	private static final Color PAGE_BG = new Color(0xFE, 0xFD, 0xF8);
+	private static final Color CREAM = new Color(0xF6, 0xF3, 0xE8);
+	private static final Color CREAM_SEL = new Color(0xED, 0xE4, 0xB8);
+	private static final Color DARK = new Color(0x37, 0x3B, 0x30);
+	private static final Color BODY = new Color(0x5E, 0x61, 0x58);
+	private static final Color MUTED = new Color(0x8A, 0x8D, 0x93);
+	private static final Color BORDER = new Color(0xE6, 0xE4, 0xDA);
+	private static final Color GOLD = new Color(0xE0, 0xC9, 0x7F);
+	private static final Color GOLD_LINE = new Color(0xEB, 0xDF, 0xAE);
+	private static final Color GOLD_DARK = new Color(0x6B, 0x5A, 0x2A);
+	private static final Color OLIVE = new Color(0x4A, 0x50, 0x3C);
 
 	private static final String FONT = "Segoe UI";
 	private static final String EMOJI = "Segoe UI Emoji";
@@ -62,6 +62,7 @@ public class TeamTodoList extends JPanel {
 	private JPanel rowsPanel;
 	private JLabel lblShowing;
 	private JLabel lblInviteCode;
+	private model.User currentUser;
 
 	public TeamTodoList(app.AppFrame frame) {
 		frame.setTitle("To-Dodo List - Team to-do list");
@@ -88,12 +89,6 @@ public class TeamTodoList extends JPanel {
 		lblBrand.setFont(new Font(FONT, Font.BOLD, 21));
 		lblBrand.setBounds(72, 18, 200, 32);
 		topBar.add(lblBrand);
-
-		JLabel lblHelp = new JLabel("\u24D8  Need a hand?");
-		lblHelp.setForeground(BODY);
-		lblHelp.setFont(new Font(FONT, Font.PLAIN, 10));
-		lblHelp.setBounds(914, 25, 110, 16);
-		topBar.add(lblHelp);
 
 		JPanel invitePanel = new JPanel();
 		invitePanel.setBackground(new Color(0xF6, 0xF0, 0xD6));
@@ -122,7 +117,8 @@ public class TeamTodoList extends JPanel {
 		lblCopyIcon.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(lblInviteCode.getText()), null);
+				Toolkit.getDefaultToolkit().getSystemClipboard()
+						.setContents(new StringSelection(lblInviteCode.getText()), null);
 			}
 		});
 		invitePanel.add(lblCopyIcon);
@@ -167,13 +163,13 @@ public class TeamTodoList extends JPanel {
 		navMine.setBounds(15, 140, 156, 36);
 		sidebar.add(navMine);
 
-		NavItem navDone = new NavItem("\u2714", "Completed", "1", false);
-		navDone.setBounds(15, 183, 156, 36);
-		sidebar.add(navDone);
-
 		NavItem navPeople = new NavItem("\u263A", "Team", "1", false);
-		navPeople.setBounds(15, 226, 156, 36);
+		navPeople.setBounds(15, 183, 156, 36);
 		sidebar.add(navPeople);
+
+		NavItem navDone = new NavItem("\u2714", "Completed", "1", false);
+		navDone.setBounds(15, 226, 156, 36);
+		sidebar.add(navDone);
 
 		JPanel smallSteps = new JPanel();
 		smallSteps.setBackground(PAGE_BG);
@@ -463,11 +459,16 @@ public class TeamTodoList extends JPanel {
 				updateShowing();
 			}
 		};
-		rowsPanel.add(new TaskRow("Set the goal for our first project", "You \u00B7 Write a clear outcome to work toward", "In progress", "Today", true, false, onDelete));
-		rowsPanel.add(new TaskRow("Outline the first week", "You \u00B7 Break the goal into small next steps", "To do", "Today", true, false, onDelete));
-		rowsPanel.add(new TaskRow("Gather useful links and files", "You \u00B7 Keep project resources in one place", "To do", "Tomorrow", false, false, onDelete));
-		rowsPanel.add(new TaskRow("Prepare a kickoff agenda", "You \u00B7 Note the topics to discuss when others join", "To do", "Oct 26", false, false, onDelete));
-		rowsPanel.add(new TaskRow("Create the team to-do list", "You \u00B7 A home for tasks, ideas, and little wins", "Completed", "Today", false, true, onDelete));
+		rowsPanel.add(new TaskRow("Set the goal for our first project",
+				"You \u00B7 Write a clear outcome to work toward", "In progress", "Today", true, false, onDelete));
+		rowsPanel.add(new TaskRow("Outline the first week", "You \u00B7 Break the goal into small next steps", "To do",
+				"Today", true, false, onDelete));
+		rowsPanel.add(new TaskRow("Gather useful links and files", "You \u00B7 Keep project resources in one place",
+				"To do", "Tomorrow", false, false, onDelete));
+		rowsPanel.add(new TaskRow("Prepare a kickoff agenda", "You \u00B7 Note the topics to discuss when others join",
+				"To do", "Oct 26", false, false, onDelete));
+		rowsPanel.add(new TaskRow("Create the team to-do list", "You \u00B7 A home for tasks, ideas, and little wins",
+				"Completed", "Today", false, true, onDelete));
 
 		JSeparator tableSep = new JSeparator();
 		tableSep.setForeground(BORDER);
@@ -543,7 +544,8 @@ public class TeamTodoList extends JPanel {
 		lblGrow.setBounds(16, 116, 190, 18);
 		teamCard.add(lblGrow);
 
-		JLabel lblGrowText = new JLabel("<html>No teammates have joined yet. Share the invite code at the top right when you\u2019re ready.</html>");
+		JLabel lblGrowText = new JLabel(
+				"<html>No teammates have joined yet. Share the invite code at the top right when you\u2019re ready.</html>");
 		lblGrowText.setVerticalAlignment(SwingConstants.TOP);
 		lblGrowText.setForeground(BODY);
 		lblGrowText.setFont(new Font(FONT, Font.PLAIN, 8));
@@ -576,7 +578,8 @@ public class TeamTodoList extends JPanel {
 		lblInspoTitle.setBounds(16, 40, 190, 22);
 		inspoCard.add(lblInspoTitle);
 
-		JLabel lblInspoText = new JLabel("<html>These example tasks show how your list can look. View the details, edit a task, or use X to remove one.</html>");
+		JLabel lblInspoText = new JLabel(
+				"<html>These example tasks show how your list can look. View the details, edit a task, or use X to remove one.</html>");
 		lblInspoText.setVerticalAlignment(SwingConstants.TOP);
 		lblInspoText.setForeground(BODY);
 		lblInspoText.setFont(new Font(FONT, Font.PLAIN, 8));
@@ -607,7 +610,7 @@ public class TeamTodoList extends JPanel {
 		lblLess.setFont(new Font(FONT, Font.ITALIC, 8));
 		lblLess.setBounds(982, 724, 213, 14);
 		contentPane.add(lblLess);
-		
+
 		JScrollPane scrollPane = new JScrollPane(contentPane);
 		scrollPane.setBorder(null);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -625,7 +628,9 @@ public class TeamTodoList extends JPanel {
 		lblShowing.setText(n == 1 ? "Showing 1 task" : "Showing all " + n + " tasks");
 	}
 
-	/** Loads an image from the classpath (src/images/...) and scales it smoothly. */
+	/**
+	 * Loads an image from the classpath (src/images/...) and scales it smoothly.
+	 */
 	private static ImageIcon scaled(String path, int w, int h) {
 		java.net.URL url = TeamTodoList.class.getResource("/" + path);
 		if (url == null) {
@@ -829,12 +834,27 @@ public class TeamTodoList extends JPanel {
 			});
 		}
 	}
+
 	public void setWelcomeLabelText(String text) {
-		
-		//lblWelcomeLabel.setText(text);
+
+		// lblWelcomeLabel.setText(text);
 	}
 
 	public void setInviteCodeText(String text) {
 		lblInviteCode.setText(text);
+	}
+
+	public model.User getCurrentUser() {
+		return currentUser;
+	}
+
+	public void setCurrentUser(model.User user) {
+		this.currentUser = user;
+	}
+
+	public void refreshTasks(String page) {
+		//page to get tasks for each flag, (ALL, USER, TEAM, COMPLETED)
+		
+		//logic here to get latest tasks from database and update the rowsPanel
 	}
 }

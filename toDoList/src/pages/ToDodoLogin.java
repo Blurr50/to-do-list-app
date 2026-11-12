@@ -30,23 +30,22 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 /**
- * To-Dodo List - login screen (Swing / WindowBuilder).
- * Put the "images" folder (dodo.png, team.png) in your project root,
- * or change the paths below.
+ * To-Dodo List - login screen (Swing / WindowBuilder). Put the "images" folder
+ * (dodo.png, team.png) in your project root, or change the paths below.
  */
 public class ToDodoLogin extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
 	// Palette
-	private static final Color LEFT_BG   = new Color(0xF8, 0xF3, 0xE6);
-	private static final Color RIGHT_BG  = new Color(0xFF, 0xFE, 0xF9);
-	private static final Color DARK      = new Color(0x37, 0x3B, 0x30);
-	private static final Color MUTED     = new Color(0x8A, 0x8D, 0x93);
-	private static final Color LIGHT     = new Color(0xA9, 0xAB, 0xB3);
-	private static final Color BORDER    = new Color(0xE2, 0xE3, 0xE6);
-	private static final Color YELLOW    = new Color(0xE8, 0xB9, 0x3C);
-	private static final Color BTN_GRAY  = new Color(0xA9, 0xAB, 0xB3);
+	private static final Color LEFT_BG = new Color(0xF8, 0xF3, 0xE6);
+	private static final Color RIGHT_BG = new Color(0xFF, 0xFE, 0xF9);
+	private static final Color DARK = new Color(0x37, 0x3B, 0x30);
+	private static final Color MUTED = new Color(0x8A, 0x8D, 0x93);
+	private static final Color LIGHT = new Color(0xA9, 0xAB, 0xB3);
+	private static final Color BORDER = new Color(0xE2, 0xE3, 0xE6);
+	private static final Color YELLOW = new Color(0xE8, 0xB9, 0x3C);
+	private static final Color BTN_GRAY = new Color(0xA9, 0xAB, 0xB3);
 
 	private static final String FONT = "Segoe UI";
 
@@ -86,7 +85,8 @@ public class ToDodoLogin extends JPanel {
 		lblTag.setBounds(0, 104, 734, 16);
 		leftPanel.add(lblTag);
 
-		JLabel lblHeadline = new JLabel("<html><div style='text-align:center'>Good days start with<br>one small step.</div></html>");
+		JLabel lblHeadline = new JLabel(
+				"<html><div style='text-align:center'>Good days start with<br>one small step.</div></html>");
 		lblHeadline.setHorizontalAlignment(SwingConstants.CENTER);
 		lblHeadline.setForeground(DARK);
 		lblHeadline.setFont(new Font(FONT, Font.BOLD, 38));
@@ -127,14 +127,8 @@ public class ToDodoLogin extends JPanel {
 		rightPanel.setLayout(null);
 		contentPane.add(rightPanel);
 
-		final int fx = 123;   // form left
-		final int fw = 327;   // form width
-
-		JLabel lblHelp = new JLabel("\u24D8  Need a hand?");
-		lblHelp.setForeground(MUTED);
-		lblHelp.setFont(new Font(FONT, Font.PLAIN, 11));
-		lblHelp.setBounds(425, 36, 110, 16);
-		rightPanel.add(lblHelp);
+		final int fx = 123; // form left
+		final int fw = 327; // form width
 
 		JLabel lblEyebrow = new JLabel("\u2014  YOUR DAY, A LITTLE LIGHTER");
 		lblEyebrow.setForeground(LIGHT);
@@ -234,95 +228,95 @@ public class ToDodoLogin extends JPanel {
 		btnSignIn.setFocusPainted(false);
 		btnSignIn.setBorder(new LineBorder(BTN_GRAY, 1, true));
 		btnSignIn.setBounds(fx, 436, fw, 41);
-		
-		//PLACEHOLDER
-		btnSignIn.addActionListener(e -> {
-			String email = txtEmail.getText().trim();
-			
-			// TODO: real authentication here
-			frame.setWelcomeLabelText("Welcome back, " + email + "!");
-			frame.showPage(app.AppFrame.MAIN);
-		});
-		
-		rightPanel.add(btnSignIn);
 
-		// ---- Divider ----
-		JSeparator sepLeft = new JSeparator();
-		sepLeft.setForeground(BORDER);
-		sepLeft.setBounds(fx, 505, 110, 2);
-		rightPanel.add(sepLeft);
+		// PLACEHOLDER
+		btnSignIn.addActionListener(e -> handleSignIn(frame));
+		{
 
-		JLabel lblNew = new JLabel("NEW TO-DODO LIST?");
-		lblNew.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNew.setForeground(LIGHT);
-		lblNew.setFont(new Font(FONT, Font.PLAIN, 9));
-		lblNew.setBounds(fx + 100, 497, fw - 200, 16);
-		rightPanel.add(lblNew);
+			rightPanel.add(btnSignIn);
 
-		JSeparator sepRight = new JSeparator();
-		sepRight.setForeground(BORDER);
-		sepRight.setBounds(fx + fw - 110, 505, 110, 2);
-		rightPanel.add(sepRight);
+			// ---- Divider ----
+			JSeparator sepLeft = new JSeparator();
+			sepLeft.setForeground(BORDER);
+			sepLeft.setBounds(fx, 505, 110, 2);
+			rightPanel.add(sepLeft);
 
-		// ---- Create account ----
-		JButton btnCreate = new JButton("Create a free account");
-		btnCreate.setForeground(MUTED);
-		btnCreate.setBackground(Color.WHITE);
-		btnCreate.setFont(new Font(FONT, Font.BOLD, 11));
-		btnCreate.setFocusPainted(false);
-		btnCreate.setBorder(new LineBorder(BORDER, 1, true));
-		btnCreate.setBounds(fx, 528, fw, 40);
-		btnCreate.addActionListener(e -> frame.showPage(app.AppFrame.CREATE_ACCOUNT));
-		rightPanel.add(btnCreate);
+			JLabel lblNew = new JLabel("NEW TO-DODO LIST?");
+			lblNew.setHorizontalAlignment(SwingConstants.CENTER);
+			lblNew.setForeground(LIGHT);
+			lblNew.setFont(new Font(FONT, Font.PLAIN, 9));
+			lblNew.setBounds(fx + 100, 497, fw - 200, 16);
+			rightPanel.add(lblNew);
 
-		JLabel lblFresh = new JLabel("A fresh start. No credit card needed.");
-		lblFresh.setHorizontalAlignment(SwingConstants.CENTER);
-		lblFresh.setForeground(MUTED);
-		lblFresh.setFont(new Font(FONT, Font.PLAIN, 10));
-		lblFresh.setBounds(fx, 583, fw, 16);
-		rightPanel.add(lblFresh);
+			JSeparator sepRight = new JSeparator();
+			sepRight.setForeground(BORDER);
+			sepRight.setBounds(fx + fw - 110, 505, 110, 2);
+			rightPanel.add(sepRight);
 
-		// ---- Footer ----
-		JLabel lblCopy = new JLabel("\u00A9 2026 To-Dodo List");
-		lblCopy.setForeground(MUTED);
-		lblCopy.setFont(new Font(FONT, Font.PLAIN, 9));
-		lblCopy.setBounds(68, 696, 200, 14);
-		rightPanel.add(lblCopy);
+			// ---- Create account ----
+			JButton btnCreate = new JButton("Create a free account");
+			btnCreate.setForeground(MUTED);
+			btnCreate.setBackground(Color.WHITE);
+			btnCreate.setFont(new Font(FONT, Font.BOLD, 11));
+			btnCreate.setFocusPainted(false);
+			btnCreate.setBorder(new LineBorder(BORDER, 1, true));
+			btnCreate.setBounds(fx, 528, fw, 40);
+			btnCreate.addActionListener(e -> frame.showPage(app.AppFrame.CREATE_ACCOUNT));
+			rightPanel.add(btnCreate);
 
-		JLabel lblPrivacy = new JLabel("Privacy");
-		lblPrivacy.setForeground(MUTED);
-		lblPrivacy.setFont(new Font(FONT, Font.PLAIN, 9));
-		lblPrivacy.setBounds(437, 696, 40, 14);
-		rightPanel.add(lblPrivacy);
+			JLabel lblFresh = new JLabel("A fresh start. No credit card needed.");
+			lblFresh.setHorizontalAlignment(SwingConstants.CENTER);
+			lblFresh.setForeground(MUTED);
+			lblFresh.setFont(new Font(FONT, Font.PLAIN, 10));
+			lblFresh.setBounds(fx, 583, fw, 16);
+			rightPanel.add(lblFresh);
 
-		JLabel lblTerms = new JLabel("Terms");
-		lblTerms.setForeground(MUTED);
-		lblTerms.setFont(new Font(FONT, Font.PLAIN, 9));
-		lblTerms.setBounds(481, 696, 40, 14);
-		rightPanel.add(lblTerms);
-		
-		JScrollPane scrollPane = new JScrollPane(contentPane);
-		scrollPane.setBorder(null);
-		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
-		scrollPane.getViewport().setBackground(RIGHT_BG);
+			// ---- Footer ----
+			JLabel lblCopy = new JLabel("\u00A9 2026 To-Dodo List");
+			lblCopy.setForeground(MUTED);
+			lblCopy.setFont(new Font(FONT, Font.PLAIN, 9));
+			lblCopy.setBounds(68, 696, 200, 14);
+			rightPanel.add(lblCopy);
 
-		setLayout(new java.awt.BorderLayout());
-		add(scrollPane, java.awt.BorderLayout.CENTER);
+			JLabel lblPrivacy = new JLabel("Privacy");
+			lblPrivacy.setForeground(MUTED);
+			lblPrivacy.setFont(new Font(FONT, Font.PLAIN, 9));
+			lblPrivacy.setBounds(437, 696, 40, 14);
+			rightPanel.add(lblPrivacy);
+
+			JLabel lblTerms = new JLabel("Terms");
+			lblTerms.setForeground(MUTED);
+			lblTerms.setFont(new Font(FONT, Font.PLAIN, 9));
+			lblTerms.setBounds(481, 696, 40, 14);
+			rightPanel.add(lblTerms);
+
+			JScrollPane scrollPane = new JScrollPane(contentPane);
+			scrollPane.setBorder(null);
+			scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+			scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+			scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
+			scrollPane.getViewport().setBackground(RIGHT_BG);
+
+			setLayout(new java.awt.BorderLayout());
+			add(scrollPane, java.awt.BorderLayout.CENTER);
+		}
 	}
 
-	/** Loads an image from disk and scales it smoothly. Returns null icon if missing. */
+	/**
+	 * Loads an image from disk and scales it smoothly. Returns null icon if
+	 * missing.
+	 */
 	private static ImageIcon scaled(String path, int w, int h) {
 		java.net.URL url = ToDodoLogin.class.getResource("/" + path);
-	    if (url == null) {
-	        System.err.println("Image not found: " + path);
-	        return null;
-	    }
-	    ImageIcon raw = new ImageIcon(url);
-	    return new ImageIcon(raw.getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH));
+		if (url == null) {
+			System.err.println("Image not found: " + path);
+			return null;
+		}
+		ImageIcon raw = new ImageIcon(url);
+		return new ImageIcon(raw.getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH));
 	}
+
 	// ---------- Placeholder helpers ----------
 	static class PlaceholderTextField extends JTextField {
 		private static final long serialVersionUID = 1L;
@@ -338,7 +332,8 @@ public class ToDodoLogin extends JPanel {
 			if (getText().isEmpty()) {
 				g.setColor(LIGHT);
 				g.setFont(getFont());
-				g.drawString(hint, getInsets().left, (getHeight() + g.getFontMetrics().getAscent() - g.getFontMetrics().getDescent()) / 2);
+				g.drawString(hint, getInsets().left,
+						(getHeight() + g.getFontMetrics().getAscent() - g.getFontMetrics().getDescent()) / 2);
 			}
 		}
 	}
@@ -357,8 +352,19 @@ public class ToDodoLogin extends JPanel {
 			if (getPassword().length == 0) {
 				g.setColor(LIGHT);
 				g.setFont(getFont());
-				g.drawString(hint, getInsets().left, (getHeight() + g.getFontMetrics().getAscent() - g.getFontMetrics().getDescent()) / 2);
+				g.drawString(hint, getInsets().left,
+						(getHeight() + g.getFontMetrics().getAscent() - g.getFontMetrics().getDescent()) / 2);
 			}
 		}
 	}
+
+	private void handleSignIn(app.AppFrame frame) {
+		String email = txtEmail.getText().trim();
+		char[] password = txtPassword.getPassword();
+
+		// TODO: real authentication here
+		// frame.setCurrentUser(user); // set the current user in the frame so other pages can access it
+		frame.setWelcomeLabelText("Welcome back, " + email + "!");
+		frame.showPage(app.AppFrame.MAIN);
+	};
 }

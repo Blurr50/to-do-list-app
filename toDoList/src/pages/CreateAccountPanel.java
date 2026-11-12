@@ -78,12 +78,17 @@ public class CreateAccountPanel extends JPanel {
 				JOptionPane.showMessageDialog(this, "Username must be at least 3 characters long");
 				return;
 			}
-			if (username.toLowerCase() == "username" || String.valueOf(password).toLowerCase().equals("password")) {
+			if (username.toLowerCase().equals("username") || String.valueOf(password).toLowerCase().equals("password")) {
 				JOptionPane.showMessageDialog(this, "Use a better username or password");
 				return;
 			}
 
-			// Add logic to save account info to database
+			boolean created = new database.UserDAO().register(username, String.valueOf(password),
+					inviteCodeField.getText());
+			if (!created) {
+				JOptionPane.showMessageDialog(this, "That username is already taken");
+				return;
+			}
 
 			JOptionPane.showMessageDialog(this, "Account created successfully for user: " + username
 					+ " with invite code: " + String.valueOf(inviteCodeField.getText()));
@@ -94,11 +99,12 @@ public class CreateAccountPanel extends JPanel {
 		JButton newInviteCodeBtn = new JButton("Generate a new invite code");
 		newInviteCodeBtn.setBounds(305, 220, 120, 30);
 		newInviteCodeBtn.addActionListener(e -> {
-			int newInviteCode = (int) (Math.random() * 900000 + 100000); // Generate a random 6-digit invite code
-			// Add logic to save the new invite code to the database
-
-			inviteCodeField.setText(newInviteCode + ""); // Small qol to automatically input the new invite code for the
-															// user
+			database.UserDAO dao = new database.UserDAO();
+			String newInviteCode;
+			do {
+				newInviteCode = String.valueOf((int) (Math.random() * 900000 + 100000)); // random 6-digit code
+			} while (dao.inviteCodeExists(newInviteCode));
+			inviteCodeField.setText(newInviteCode);
 		});
 		add(newInviteCodeBtn);
 
