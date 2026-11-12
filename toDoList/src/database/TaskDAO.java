@@ -34,11 +34,12 @@ public class TaskDAO {
             ps.setInt(1, userId);
             ps.setInt(2, userId);
             try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    int assigned = rs.getInt("assigned_to");
-                    tasks.add(new Task(rs.getInt("id"), rs.getString("title"), rs.getString("description"),
-                            rs.getInt("created_by"), rs.wasNull() ? null : assigned,
-                            rs.getInt("is_complete") == 1));
+            	while (rs.next()) {
+            	    int assigned = rs.getInt("assigned_to");
+            	    Integer assignedTo = rs.wasNull() ? null : assigned;   // check immediately after reading
+            	    tasks.add(new Task(rs.getInt("id"), rs.getString("title"), rs.getString("description"),
+            	            rs.getInt("created_by"), assignedTo,
+            	            rs.getInt("is_complete") == 1));
                 }
             }
         } catch (SQLException e) {

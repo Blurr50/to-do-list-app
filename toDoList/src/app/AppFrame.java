@@ -27,7 +27,8 @@ public class AppFrame extends JFrame {
 
 		root.add(new pages.LoginPanel(this), LOGIN);
 		root.add(new pages.CreateAccountPanel(this), CREATE_ACCOUNT);
-		root.add(new pages.MainPanel(this), MAIN);
+	     mainPanel = new pages.MainPanel(this);
+	     root.add(mainPanel, MAIN);
 		root.add(new pages.AddTaskPanel(this), ADD_TASK);
 
 		setContentPane(root);

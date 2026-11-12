@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assumptions.assumeFalse;
  
 import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
+import java.io.File;
 import java.util.Arrays;
  
 import javax.swing.SwingUtilities;
