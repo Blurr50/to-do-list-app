@@ -9,6 +9,11 @@ public class LoginPanel extends JPanel {
 	private JPasswordField passwordField;
 
 	public LoginPanel(app.AppFrame frame) {
+		
+		/*
+		 * Obselete code, replaced by ToDodoLogin.java
+		 * this remains as a reference if necessary later
+		 */
 		setLayout(null); // placeholder for now, will change to a better layout later
 
 		JLabel usernameLabel = new JLabel("Username:");
@@ -39,19 +44,12 @@ public class LoginPanel extends JPanel {
 
 	}
 
-	private void handleLogin(app.AppFrame frame) {
-		model.User user = new database.UserDAO().login(usernameField.getText(),
-				String.valueOf(passwordField.getPassword()));
-		if (user != null) {
-			frame.setCurrentUser(user);
-			frame.setWelcomeLabelText("Welcome, " + user.username() + "!");
-			frame.setInviteCodeText(user.inviteCode());
-			frame.refreshTasks();
-			frame.showPage(app.AppFrame.MAIN);
-			passwordField.setText("");
-		} else {
-			JOptionPane.showMessageDialog(this, "Invalid username or password");
-		}
+	private boolean authenticate(String user, char[] pass) {
+		// check if the username and password are correct
+		// probabaly should use key value pair to store the username and password in a
+		// database
+		
+		return false;
 	}
 
 }

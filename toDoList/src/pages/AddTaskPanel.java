@@ -6,8 +6,10 @@ public class AddTaskPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	// add necessary fields such as task name, description, etc. and buttons for
-	// adding a task
+	/*
+	 * Obselete code, replaced by AddTask.java
+	 * this remains as a reference if necessary later
+	 */
 
 	private JTextField taskNameField;
 	private JTextArea taskDescriptionArea;

@@ -1,6 +1,7 @@
 package pages;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -18,8 +19,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
@@ -31,7 +34,7 @@ import javax.swing.border.LineBorder;
  * Put the "images" folder (dodo.png, team.png) in your project root,
  * or change the paths below.
  */
-public class ToDodoLogin extends JFrame {
+public class ToDodoLogin extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
@@ -51,29 +54,12 @@ public class ToDodoLogin extends JFrame {
 	private PlaceholderTextField txtEmail;
 	private PlaceholderPasswordField txtPassword;
 
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-					ToDodoLogin frame = new ToDodoLogin();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	public ToDodoLogin() {
-		setTitle("To-Dodo List");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1303, 760);
-		setLocationRelativeTo(null);
+	public ToDodoLogin(app.AppFrame frame) {
+		frame.setTitle("To-Dodo List - Login");
 		contentPane = new JPanel();
 		contentPane.setBackground(RIGHT_BG);
+		contentPane.setPreferredSize(new Dimension(1219, 882));
 		contentPane.setLayout(null);
-		setContentPane(contentPane);
 
 		// =============== LEFT PANEL ===============
 		JPanel leftPanel = new JPanel();
@@ -248,6 +234,16 @@ public class ToDodoLogin extends JFrame {
 		btnSignIn.setFocusPainted(false);
 		btnSignIn.setBorder(new LineBorder(BTN_GRAY, 1, true));
 		btnSignIn.setBounds(fx, 436, fw, 41);
+		
+		//PLACEHOLDER
+		btnSignIn.addActionListener(e -> {
+			String email = txtEmail.getText().trim();
+			
+			// TODO: real authentication here
+			frame.setWelcomeLabelText("Welcome back, " + email + "!");
+			frame.showPage(app.AppFrame.MAIN);
+		});
+		
 		rightPanel.add(btnSignIn);
 
 		// ---- Divider ----
@@ -276,6 +272,7 @@ public class ToDodoLogin extends JFrame {
 		btnCreate.setFocusPainted(false);
 		btnCreate.setBorder(new LineBorder(BORDER, 1, true));
 		btnCreate.setBounds(fx, 528, fw, 40);
+		btnCreate.addActionListener(e -> frame.showPage(app.AppFrame.CREATE_ACCOUNT));
 		rightPanel.add(btnCreate);
 
 		JLabel lblFresh = new JLabel("A fresh start. No credit card needed.");
@@ -303,6 +300,17 @@ public class ToDodoLogin extends JFrame {
 		lblTerms.setFont(new Font(FONT, Font.PLAIN, 9));
 		lblTerms.setBounds(481, 696, 40, 14);
 		rightPanel.add(lblTerms);
+		
+		JScrollPane scrollPane = new JScrollPane(contentPane);
+		scrollPane.setBorder(null);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+		scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
+		scrollPane.getViewport().setBackground(RIGHT_BG);
+
+		setLayout(new java.awt.BorderLayout());
+		add(scrollPane, java.awt.BorderLayout.CENTER);
 	}
 
 	/** Loads an image from disk and scales it smoothly. Returns null icon if missing. */

@@ -5,6 +5,12 @@ import javax.swing.*;
 public class CreateAccountPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
+	
+	/*
+	 * Obselete code, replaced by JoinList.java and InviteReady.java
+	 * this remains as a reference if necessary later
+	 */
+	
 	private JTextField usernameField;
 	private JPasswordField passwordField;
 	private JPasswordField passwordFieldCheck; // repeat password to make sure the user typed it correctly
