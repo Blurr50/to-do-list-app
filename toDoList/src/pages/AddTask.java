@@ -428,6 +428,7 @@ public class AddTask extends JPanel {
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				clearForm();
+				frame.showPage(app.AppFrame.MAIN);
 			}
 		});
 		formCard.add(btnCancel);
@@ -561,11 +562,6 @@ public class AddTask extends JPanel {
 	// =====================================================================
 
 	private void addTask(app.AppFrame frame) {
-		String title = txtTitle.getText().trim();
-		if (title.isEmpty()) {
-			JOptionPane.showMessageDialog(this, "Please give your task a title.");
-			return;
-		}
 
 		String taskName = txtTitle.getText();
 		String taskDescription = txtDescription.getText();
@@ -578,9 +574,9 @@ public class AddTask extends JPanel {
 
 		model.User me = frame.getCurrentUser();
 		new database.TaskDAO().addTask(taskName.trim(), taskDescription, me.id(), null, me.teamId());
-		frame.refreshTasks("ALL");
+		frame.refreshTasks("ALL", "ALL");
 
-		String summary = "Task added!\n\nTitle: " + title + "\nDescription: " + txtDescription.getText().trim()
+		String summary = "Task added!\n\nTitle: " + taskName + "\nDescription: " + txtDescription.getText().trim()
 				+ "\nDue: " + cmbDue.getSelectedItem() + "\nPriority: " + cmbPriority.getSelectedItem() + "\nStatus: "
 				+ cmbStatus.getSelectedItem();
 		JOptionPane.showMessageDialog(this, summary);

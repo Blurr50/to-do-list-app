@@ -31,7 +31,7 @@ public class AppFrame extends JFrame {
 
 	public AppFrame() {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setSize(1303, 760);
+		setSize(1303, 835);
 		setLocationRelativeTo(null);
 
 		// Register every page with a name
@@ -54,16 +54,12 @@ public class AppFrame extends JFrame {
 		cards.show(root, name);
 	}
 
-	public void setWelcomeLabelText(String text) {
-		teamTodoList.setWelcomeLabelText(text);
-	}
-
 	public void setInviteCodeText(String text) {
 		teamTodoList.setInviteCodeText(text);
 	}
 
-	public void refreshTasks(String page) {
-		teamTodoList.refreshTasks(page);
+	public void refreshTasks(String page, String filter) {
+		teamTodoList.refreshTasks(page, filter);
 	}
 
 	public model.User getCurrentUser() {

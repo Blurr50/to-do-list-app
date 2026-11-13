@@ -63,6 +63,13 @@ public class TeamTodoList extends JPanel {
 	private JLabel lblShowing;
 	private JLabel lblInviteCode;
 	private model.User currentUser;
+	
+	private JLabel lblTotalNum, lblTotalText;
+	private JLabel lblTodoNum, lblTodoText;
+	private JLabel lblProgNum, lblProgText;
+	private JLabel lblDoneNum, lblDoneText;
+	
+	private JLabel lblTabAll, lblTabTodo, lblTabProgress, lblTabDone;
 
 	public TeamTodoList(app.AppFrame frame) {
 		frame.setTitle("To-Dodo List - Team to-do list");
@@ -89,6 +96,25 @@ public class TeamTodoList extends JPanel {
 		lblBrand.setFont(new Font(FONT, Font.BOLD, 21));
 		lblBrand.setBounds(72, 18, 200, 32);
 		topBar.add(lblBrand);
+		
+		JButton btnGo = new JButton("Log Out  \u2192");
+		btnGo.setForeground(DARK);
+		btnGo.setBackground(GOLD);
+		btnGo.setFont(new Font(FONT, Font.BOLD, 11));
+		btnGo.setFocusPainted(false);
+		btnGo.setBorder(new LineBorder(GOLD, 1, true));
+		btnGo.setBounds(870, 20, 80, 20);
+		btnGo.addActionListener(e -> {
+			// MAYBE: authentication here?
+			
+			
+			
+			
+			
+			frame.showPage(app.AppFrame.LOGIN);
+		});
+		topBar.add(btnGo);
+
 
 		JPanel invitePanel = new JPanel();
 		invitePanel.setBackground(new Color(0xF6, 0xF0, 0xD6));
@@ -264,13 +290,13 @@ public class TeamTodoList extends JPanel {
 		statsPanel.setLayout(null);
 		contentPane.add(statsPanel);
 
-		JLabel lblTotalNum = new JLabel("5");
+		lblTotalNum = new JLabel("5");
 		lblTotalNum.setForeground(DARK);
 		lblTotalNum.setFont(new Font(FONT, Font.BOLD, 22));
 		lblTotalNum.setBounds(19, 17, 20, 30);
 		statsPanel.add(lblTotalNum);
 
-		JLabel lblTotalText = new JLabel("total tasks");
+		lblTotalText = new JLabel("total tasks");
 		lblTotalText.setForeground(BODY);
 		lblTotalText.setFont(new Font(FONT, Font.PLAIN, 10));
 		lblTotalText.setBounds(40, 24, 80, 16);
@@ -293,13 +319,13 @@ public class TeamTodoList extends JPanel {
 		lblTodoIcon.setBounds(184, 28, 24, 24);
 		statsPanel.add(lblTodoIcon);
 
-		JLabel lblTodoNum = new JLabel("3");
+		lblTodoNum = new JLabel("3");
 		lblTodoNum.setForeground(DARK);
 		lblTodoNum.setFont(new Font(FONT, Font.BOLD, 20));
 		lblTodoNum.setBounds(209, 15, 40, 28);
 		statsPanel.add(lblTodoNum);
 
-		JLabel lblTodoText = new JLabel("To do");
+		lblTodoText = new JLabel("To do");
 		lblTodoText.setForeground(BODY);
 		lblTodoText.setFont(new Font(FONT, Font.PLAIN, 9));
 		lblTodoText.setBounds(209, 46, 80, 14);
@@ -311,13 +337,13 @@ public class TeamTodoList extends JPanel {
 		lblProgIcon.setBounds(392, 28, 24, 24);
 		statsPanel.add(lblProgIcon);
 
-		JLabel lblProgNum = new JLabel("1");
+		lblProgNum = new JLabel("1");
 		lblProgNum.setForeground(DARK);
 		lblProgNum.setFont(new Font(FONT, Font.BOLD, 20));
 		lblProgNum.setBounds(417, 15, 40, 28);
 		statsPanel.add(lblProgNum);
 
-		JLabel lblProgText = new JLabel("In progress");
+		lblProgText = new JLabel("In progress");
 		lblProgText.setForeground(BODY);
 		lblProgText.setFont(new Font(FONT, Font.PLAIN, 9));
 		lblProgText.setBounds(417, 46, 80, 14);
@@ -329,13 +355,13 @@ public class TeamTodoList extends JPanel {
 		lblDoneIcon.setBounds(598, 28, 24, 24);
 		statsPanel.add(lblDoneIcon);
 
-		JLabel lblDoneNum = new JLabel("1");
+		lblDoneNum = new JLabel("1");
 		lblDoneNum.setForeground(DARK);
 		lblDoneNum.setFont(new Font(FONT, Font.BOLD, 20));
 		lblDoneNum.setBounds(624, 15, 40, 28);
 		statsPanel.add(lblDoneNum);
 
-		JLabel lblDoneText = new JLabel("Completed");
+		lblDoneText = new JLabel("Completed");
 		lblDoneText.setForeground(BODY);
 		lblDoneText.setFont(new Font(FONT, Font.PLAIN, 9));
 		lblDoneText.setBounds(624, 46, 80, 14);
@@ -365,7 +391,7 @@ public class TeamTodoList extends JPanel {
 		statsPanel.add(barTrack);
 
 		// =============== FILTER TABS + SEARCH ===============
-		JLabel lblTabAll = new JLabel("All tasks  5", SwingConstants.CENTER);
+		lblTabAll = new JLabel("All tasks  5", SwingConstants.CENTER);
 		lblTabAll.setOpaque(true);
 		lblTabAll.setBackground(new Color(0x3C, 0x40, 0x32));
 		lblTabAll.setForeground(Color.WHITE);
@@ -374,19 +400,19 @@ public class TeamTodoList extends JPanel {
 		lblTabAll.setBounds(217, 304, 68, 30);
 		contentPane.add(lblTabAll);
 
-		JLabel lblTabTodo = new JLabel("To do  3");
+		lblTabTodo = new JLabel("To do  3");
 		lblTabTodo.setForeground(BODY);
 		lblTabTodo.setFont(new Font(FONT, Font.PLAIN, 9));
 		lblTabTodo.setBounds(299, 304, 50, 30);
 		contentPane.add(lblTabTodo);
 
-		JLabel lblTabProgress = new JLabel("In progress  1");
+		lblTabProgress = new JLabel("In progress  1");
 		lblTabProgress.setForeground(BODY);
 		lblTabProgress.setFont(new Font(FONT, Font.PLAIN, 9));
 		lblTabProgress.setBounds(357, 304, 70, 30);
 		contentPane.add(lblTabProgress);
 
-		JLabel lblTabDone = new JLabel("Completed  1");
+		lblTabDone = new JLabel("Completed  1");
 		lblTabDone.setForeground(BODY);
 		lblTabDone.setFont(new Font(FONT, Font.PLAIN, 9));
 		lblTabDone.setBounds(438, 304, 70, 30);
@@ -835,11 +861,6 @@ public class TeamTodoList extends JPanel {
 		}
 	}
 
-	public void setWelcomeLabelText(String text) {
-
-		// lblWelcomeLabel.setText(text);
-	}
-
 	public void setInviteCodeText(String text) {
 		lblInviteCode.setText(text);
 	}
@@ -852,8 +873,14 @@ public class TeamTodoList extends JPanel {
 		this.currentUser = user;
 	}
 
-	public void refreshTasks(String page) {
-		//page to get tasks for each flag, (ALL, USER, TEAM, COMPLETED)
+	public void refreshTasks(String page, String filter) {
+		//page to get tasks for each flag, (ALL, USER, TEAM, COMPLETED), (ALL, TODO, IN_PROGRESS, DONE)
+		
+		//highlight the selected tab on the left side of the page
+		
+		//highlight the selected tab in the middle of the page
+		
+		//
 		
 		//logic here to get latest tasks from database and update the rowsPanel
 	}

@@ -374,7 +374,6 @@ public class ToDodoLogin extends JPanel {
 		// TODO: real authentication here
 		// frame.setCurrentUser(user); // set the current user in the frame so other
 		// pages can access it
-		frame.setWelcomeLabelText("Welcome back, " + email + "!");
 		frame.showPage(app.AppFrame.MAIN);
 	};
 }

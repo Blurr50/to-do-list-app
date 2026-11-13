@@ -276,7 +276,6 @@ public class InviteReady extends JPanel {
 			
 			
 			
-			frame.setWelcomeLabelText("Welcome back, " + "!");
 			frame.showPage(app.AppFrame.MAIN);
 		});
 		rightPanel.add(btnGo);
