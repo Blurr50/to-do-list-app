@@ -203,6 +203,7 @@ public class ToDodoLogin extends JPanel {
 		});
 
 		// ---- Remember / Forgot ----
+		/*
 		JCheckBox chkRemember = new JCheckBox("Remember me");
 		chkRemember.setSelected(true);
 		chkRemember.setOpaque(false);
@@ -219,6 +220,7 @@ public class ToDodoLogin extends JPanel {
 		lblForgot.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 		lblForgot.setBounds(fx + fw - 140, 406, 140, 18);
 		rightPanel.add(lblForgot);
+		*/
 
 		// ---- Sign in ----
 		JButton btnSignIn = new JButton("Sign in  \u2192");
@@ -232,75 +234,82 @@ public class ToDodoLogin extends JPanel {
 		// PLACEHOLDER
 		btnSignIn.addActionListener(e -> handleSignIn(frame));
 		{
-
-			rightPanel.add(btnSignIn);
-
-			// ---- Divider ----
-			JSeparator sepLeft = new JSeparator();
-			sepLeft.setForeground(BORDER);
-			sepLeft.setBounds(fx, 505, 110, 2);
-			rightPanel.add(sepLeft);
-
-			JLabel lblNew = new JLabel("NEW TO-DODO LIST?");
-			lblNew.setHorizontalAlignment(SwingConstants.CENTER);
-			lblNew.setForeground(LIGHT);
-			lblNew.setFont(new Font(FONT, Font.PLAIN, 9));
-			lblNew.setBounds(fx + 100, 497, fw - 200, 16);
-			rightPanel.add(lblNew);
-
-			JSeparator sepRight = new JSeparator();
-			sepRight.setForeground(BORDER);
-			sepRight.setBounds(fx + fw - 110, 505, 110, 2);
-			rightPanel.add(sepRight);
-
-			// ---- Create account ----
-			JButton btnCreate = new JButton("Create a free account");
-			btnCreate.setForeground(MUTED);
-			btnCreate.setBackground(Color.WHITE);
-			btnCreate.setFont(new Font(FONT, Font.BOLD, 11));
-			btnCreate.setFocusPainted(false);
-			btnCreate.setBorder(new LineBorder(BORDER, 1, true));
-			btnCreate.setBounds(fx, 528, fw, 40);
-			btnCreate.addActionListener(e -> frame.showPage(app.AppFrame.CREATE_ACCOUNT));
-			rightPanel.add(btnCreate);
-
-			JLabel lblFresh = new JLabel("A fresh start. No credit card needed.");
-			lblFresh.setHorizontalAlignment(SwingConstants.CENTER);
-			lblFresh.setForeground(MUTED);
-			lblFresh.setFont(new Font(FONT, Font.PLAIN, 10));
-			lblFresh.setBounds(fx, 583, fw, 16);
-			rightPanel.add(lblFresh);
-
-			// ---- Footer ----
-			JLabel lblCopy = new JLabel("\u00A9 2026 To-Dodo List");
-			lblCopy.setForeground(MUTED);
-			lblCopy.setFont(new Font(FONT, Font.PLAIN, 9));
-			lblCopy.setBounds(68, 696, 200, 14);
-			rightPanel.add(lblCopy);
-
-			JLabel lblPrivacy = new JLabel("Privacy");
-			lblPrivacy.setForeground(MUTED);
-			lblPrivacy.setFont(new Font(FONT, Font.PLAIN, 9));
-			lblPrivacy.setBounds(437, 696, 40, 14);
-			rightPanel.add(lblPrivacy);
-
-			JLabel lblTerms = new JLabel("Terms");
-			lblTerms.setForeground(MUTED);
-			lblTerms.setFont(new Font(FONT, Font.PLAIN, 9));
-			lblTerms.setBounds(481, 696, 40, 14);
-			rightPanel.add(lblTerms);
-
-			JScrollPane scrollPane = new JScrollPane(contentPane);
-			scrollPane.setBorder(null);
-			scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-			scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-			scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-			scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
-			scrollPane.getViewport().setBackground(RIGHT_BG);
-
-			setLayout(new java.awt.BorderLayout());
-			add(scrollPane, java.awt.BorderLayout.CENTER);
+			// TODO: real authentication here
+			
+			
+			
+			
+			
 		}
+
+		rightPanel.add(btnSignIn);
+
+		// ---- Divider ----
+		JSeparator sepLeft = new JSeparator();
+		sepLeft.setForeground(BORDER);
+		sepLeft.setBounds(fx, 505, 110, 2);
+		rightPanel.add(sepLeft);
+
+		JLabel lblNew = new JLabel("NEW TO-DODO LIST?");
+		lblNew.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNew.setForeground(LIGHT);
+		lblNew.setFont(new Font(FONT, Font.PLAIN, 9));
+		lblNew.setBounds(fx + 100, 497, fw - 200, 16);
+		rightPanel.add(lblNew);
+
+		JSeparator sepRight = new JSeparator();
+		sepRight.setForeground(BORDER);
+		sepRight.setBounds(fx + fw - 110, 505, 110, 2);
+		rightPanel.add(sepRight);
+
+		// ---- Create account ----
+		JButton btnCreate = new JButton("Create a free account");
+		btnCreate.setForeground(MUTED);
+		btnCreate.setBackground(Color.WHITE);
+		btnCreate.setFont(new Font(FONT, Font.BOLD, 11));
+		btnCreate.setFocusPainted(false);
+		btnCreate.setBorder(new LineBorder(BORDER, 1, true));
+		btnCreate.setBounds(fx, 528, fw, 40);
+		btnCreate.addActionListener(e -> frame.showPage(app.AppFrame.CREATE_ACCOUNT));
+		rightPanel.add(btnCreate);
+
+		JLabel lblFresh = new JLabel("A fresh start. No credit card needed.");
+		lblFresh.setHorizontalAlignment(SwingConstants.CENTER);
+		lblFresh.setForeground(MUTED);
+		lblFresh.setFont(new Font(FONT, Font.PLAIN, 10));
+		lblFresh.setBounds(fx, 583, fw, 16);
+		rightPanel.add(lblFresh);
+
+		// ---- Footer ----
+		JLabel lblCopy = new JLabel("\u00A9 2026 To-Dodo List");
+		lblCopy.setForeground(MUTED);
+		lblCopy.setFont(new Font(FONT, Font.PLAIN, 9));
+		lblCopy.setBounds(68, 696, 200, 14);
+		rightPanel.add(lblCopy);
+
+		JLabel lblPrivacy = new JLabel("Privacy");
+		lblPrivacy.setForeground(MUTED);
+		lblPrivacy.setFont(new Font(FONT, Font.PLAIN, 9));
+		lblPrivacy.setBounds(437, 696, 40, 14);
+		rightPanel.add(lblPrivacy);
+
+		JLabel lblTerms = new JLabel("Terms");
+		lblTerms.setForeground(MUTED);
+		lblTerms.setFont(new Font(FONT, Font.PLAIN, 9));
+		lblTerms.setBounds(481, 696, 40, 14);
+		rightPanel.add(lblTerms);
+
+		JScrollPane scrollPane = new JScrollPane(contentPane);
+		scrollPane.setBorder(null);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+		scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
+		scrollPane.getViewport().setBackground(RIGHT_BG);
+
+		setLayout(new java.awt.BorderLayout());
+		add(scrollPane, java.awt.BorderLayout.CENTER);
+
 	}
 
 	/**
@@ -363,7 +372,8 @@ public class ToDodoLogin extends JPanel {
 		char[] password = txtPassword.getPassword();
 
 		// TODO: real authentication here
-		// frame.setCurrentUser(user); // set the current user in the frame so other pages can access it
+		// frame.setCurrentUser(user); // set the current user in the frame so other
+		// pages can access it
 		frame.setWelcomeLabelText("Welcome back, " + email + "!");
 		frame.showPage(app.AppFrame.MAIN);
 	};

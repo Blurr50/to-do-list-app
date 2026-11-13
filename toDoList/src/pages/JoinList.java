@@ -10,6 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -23,38 +25,45 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
+import pages.ToDodoLogin.PlaceholderPasswordField;
+import pages.ToDodoLogin.PlaceholderTextField;
+
 /**
- * To-Dodo List - "Join a to-do list" screen (Swing / WindowBuilder).
- * Images are loaded from the classpath: src/images/dodo.png and src/images/team.png
+ * To-Dodo List - "Join a to-do list" screen (Swing / WindowBuilder). Images are
+ * loaded from the classpath: src/images/dodo.png and src/images/team.png
  */
 public class JoinList extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
 	// Palette
-	private static final Color LEFT_BG    = new Color(0xF6, 0xF3, 0xE8);
-	private static final Color RIGHT_BG   = new Color(0xFF, 0xFE, 0xF9);
-	private static final Color DARK       = new Color(0x37, 0x3B, 0x30);
-	private static final Color MUTED      = new Color(0x8A, 0x8D, 0x93);
-	private static final Color LIGHT      = new Color(0xA9, 0xAB, 0xB3);
-	private static final Color BORDER     = new Color(0xE2, 0xE3, 0xE6);
-	private static final Color GOLD       = new Color(0xE0, 0xC9, 0x7F);
-	private static final Color GOLD_DARK  = new Color(0x6B, 0x5A, 0x2A);
-	private static final Color CARD_BG    = new Color(0xFD, 0xFA, 0xF0);
-	private static final Color CARD_LINE  = new Color(0xEB, 0xDF, 0xAE);
-	private static final Color BTN_GRAY   = new Color(0xA9, 0xAB, 0xB3);
+	private static final Color LEFT_BG = new Color(0xF6, 0xF3, 0xE8);
+	private static final Color RIGHT_BG = new Color(0xFF, 0xFE, 0xF9);
+	private static final Color DARK = new Color(0x37, 0x3B, 0x30);
+	private static final Color MUTED = new Color(0x8A, 0x8D, 0x93);
+	private static final Color LIGHT = new Color(0xA9, 0xAB, 0xB3);
+	private static final Color BORDER = new Color(0xE2, 0xE3, 0xE6);
+	private static final Color GOLD = new Color(0xE0, 0xC9, 0x7F);
+	private static final Color GOLD_DARK = new Color(0x6B, 0x5A, 0x2A);
+	private static final Color CARD_BG = new Color(0xFD, 0xFA, 0xF0);
+	private static final Color CARD_LINE = new Color(0xEB, 0xDF, 0xAE);
+	private static final Color BTN_GRAY = new Color(0xA9, 0xAB, 0xB3);
 
 	private static final String FONT = "Segoe UI";
 
 	private JPanel contentPane;
 	private JTextField txtCode1, txtCode2, txtCode3, txtCode4, txtCode5, txtCode6;
 
+	private PlaceholderTextField txtEmail;
+	private PlaceholderPasswordField txtPassword;
 
 	public JoinList(app.AppFrame frame) {
 		frame.setTitle("To-Dodo List - Join");
@@ -88,7 +97,8 @@ public class JoinList extends JPanel {
 		lblTag.setBounds(0, 94, 682, 14);
 		leftPanel.add(lblTag);
 
-		JLabel lblHeadline = new JLabel("<html><div style='text-align:center'>Good days start with<br>one small step.</div></html>");
+		JLabel lblHeadline = new JLabel(
+				"<html><div style='text-align:center'>Good days start with<br>one small step.</div></html>");
 		lblHeadline.setHorizontalAlignment(SwingConstants.CENTER);
 		lblHeadline.setForeground(DARK);
 		lblHeadline.setFont(new Font(FONT, Font.BOLD, 36));
@@ -108,7 +118,8 @@ public class JoinList extends JPanel {
 		lblIllustration.setBounds(0, 248, 682, 312);
 		leftPanel.add(lblIllustration);
 
-		JLabel lblWins = new JLabel("<html><span style='color:#E0C97F'>\u2714</span>&nbsp; Less overwhelm. More little wins.</html>");
+		JLabel lblWins = new JLabel(
+				"<html><span style='color:#E0C97F'>\u2714</span>&nbsp; Less overwhelm. More little wins.</html>");
 		lblWins.setHorizontalAlignment(SwingConstants.CENTER);
 		lblWins.setForeground(GOLD_DARK);
 		lblWins.setFont(new Font(FONT, Font.BOLD, 10));
@@ -129,8 +140,8 @@ public class JoinList extends JPanel {
 		rightPanel.setLayout(null);
 		contentPane.add(rightPanel);
 
-		final int fx = 115;   // form left
-		final int fw = 306;   // form width
+		final int fx = 115; // form left
+		final int fw = 306; // form width
 
 		JLabel lblEyebrow = new JLabel("\u2014  JOIN A TO-DO LIST");
 		lblEyebrow.setForeground(LIGHT);
@@ -145,23 +156,77 @@ public class JoinList extends JPanel {
 		lblHeading.setBounds(fx, 98, fw + 40, 80);
 		rightPanel.add(lblHeading);
 
-		JLabel lblEnter = new JLabel("Enter the invite code shared with you.");
-		lblEnter.setForeground(new Color(0x6B, 0x6E, 0x66));
-		lblEnter.setFont(new Font(FONT, Font.PLAIN, 11));
-		lblEnter.setBounds(fx, 179, fw, 18);
-		rightPanel.add(lblEnter);
+		// ---- Email ----
+		JLabel lblEmail = new JLabel("Email address");
+		lblEmail.setForeground(DARK);
+		lblEmail.setFont(new Font(FONT, Font.BOLD, 11));
+		lblEmail.setBounds(fx, 187, fw, 16);
+		rightPanel.add(lblEmail);
 
+		JLabel lblEmailIcon = new JLabel("\u2709");
+		lblEmailIcon.setForeground(MUTED);
+		lblEmailIcon.setFont(new Font(FONT, Font.PLAIN, 15));
+		lblEmailIcon.setBounds(fx + 12, 218, 20, 20);
+		rightPanel.add(lblEmailIcon);
+
+		txtEmail = new PlaceholderTextField("you@example.com");
+		txtEmail.setFont(new Font(FONT, Font.PLAIN, 12));
+		txtEmail.setBorder(new CompoundBorder(new LineBorder(BORDER, 1, true), new EmptyBorder(0, 36, 0, 10)));
+		txtEmail.setBounds(fx, 208, fw, 41);
+		rightPanel.add(txtEmail);
+
+		// ---- Password ----
+		JLabel lblPassword = new JLabel("Password");
+		lblPassword.setForeground(DARK);
+		lblPassword.setFont(new Font(FONT, Font.BOLD, 11));
+		lblPassword.setBounds(fx, 262, fw, 16);
+		rightPanel.add(lblPassword);
+
+		JLabel lblLockIcon = new JLabel("\uD83D\uDD12");
+		lblLockIcon.setForeground(MUTED);
+		lblLockIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 13));
+		lblLockIcon.setBounds(fx + 12, 293, 20, 20);
+		rightPanel.add(lblLockIcon);
+
+		final JLabel lblEye = new JLabel("\uD83D\uDC41");
+		lblEye.setForeground(MUTED);
+		lblEye.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 14));
+		lblEye.setBounds(fx + fw - 30, 293, 20, 20);
+		lblEye.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+		rightPanel.add(lblEye);
+
+		txtPassword = new PlaceholderPasswordField("Enter your password");
+		txtPassword.setFont(new Font(FONT, Font.PLAIN, 12));
+		txtPassword.setBorder(new CompoundBorder(new LineBorder(BORDER, 1, true), new EmptyBorder(0, 36, 0, 36)));
+		txtPassword.setBounds(fx, 283, fw, 41);
+		rightPanel.add(txtPassword);
+
+		lblEye.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// toggle show / hide password
+				boolean hidden = txtPassword.getEchoChar() != 0;
+				txtPassword.setEchoChar(hidden ? (char) 0 : '\u2022');
+			}
+		});
+
+		/*
+		 * maybe add this back later? JLabel lblEnter = new
+		 * JLabel("Enter the invite code shared with you."); lblEnter.setForeground(new
+		 * Color(0x6B, 0x6E, 0x66)); lblEnter.setFont(new Font(FONT, Font.PLAIN, 11));
+		 * lblEnter.setBounds(fx, 277, fw, 18); rightPanel.add(lblEnter);
+		 */
 		// ---- Invite code ----
 		JLabel lblCode = new JLabel("6-character invite code");
 		lblCode.setForeground(DARK);
 		lblCode.setFont(new Font(FONT, Font.BOLD, 10));
-		lblCode.setBounds(fx, 214, fw, 14);
+		lblCode.setBounds(fx, 337, fw, 14);
 		rightPanel.add(lblCode);
 
 		JPanel codePanel = new JPanel();
 		codePanel.setBackground(Color.WHITE);
 		codePanel.setBorder(new LineBorder(BORDER, 1, true));
-		codePanel.setBounds(fx, 235, fw, 51);
+		codePanel.setBounds(fx, 358, fw, 51);
 		codePanel.setLayout(null);
 		rightPanel.add(codePanel);
 
@@ -229,74 +294,49 @@ public class JoinList extends JPanel {
 		btnJoin.setFont(new Font(FONT, Font.BOLD, 11));
 		btnJoin.setFocusPainted(false);
 		btnJoin.setBorder(new LineBorder(BTN_GRAY, 1, true));
-		btnJoin.setBounds(fx, 302, fw, 38);
+		btnJoin.setBounds(fx, 426, fw, 38);
 		btnJoin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String code = (txtCode1.getText() + txtCode2.getText() + txtCode3.getText()
-						+ txtCode4.getText() + txtCode5.getText() + txtCode6.getText());
+				String code = (txtCode1.getText() + txtCode2.getText() + txtCode3.getText() + txtCode4.getText()
+						+ txtCode5.getText() + txtCode6.getText());
 				if (code.length() < 6) {
 					JOptionPane.showMessageDialog(JoinList.this, "Please enter all 6 characters.");
 				} else {
+					// TODO: real authentication here
+					
+					
+					
+					
+					
 					JOptionPane.showMessageDialog(JoinList.this, "Joining list " + code + "...");
 				}
 			}
 		});
 		rightPanel.add(btnJoin);
 
-		
-		
-		//REPLACE WITH LOGIN DETAILS
-		// ---- Divider: scan ----
-		JSeparator sepScanL = new JSeparator();
-		sepScanL.setForeground(BORDER);
-		sepScanL.setBounds(fx, 366, 88, 2);
-		rightPanel.add(sepScanL);
-
-		JLabel lblScanOr = new JLabel("Or scan an invite QR code");
-		lblScanOr.setHorizontalAlignment(SwingConstants.CENTER);
-		lblScanOr.setForeground(MUTED);
-		lblScanOr.setFont(new Font(FONT, Font.PLAIN, 9));
-		lblScanOr.setBounds(fx + 90, 359, fw - 180, 16);
-		rightPanel.add(lblScanOr);
-
-		JSeparator sepScanR = new JSeparator();
-		sepScanR.setForeground(BORDER);
-		sepScanR.setBounds(fx + fw - 90, 366, 90, 2);
-		rightPanel.add(sepScanR);
-
-		// ---- Scan QR ----
-		JButton btnScan = new JButton("\u25A3  Scan QR code");
-		btnScan.setForeground(LIGHT);
-		btnScan.setBackground(RIGHT_BG);
-		btnScan.setFont(new Font(FONT, Font.BOLD, 10));
-		btnScan.setFocusPainted(false);
-		btnScan.setBorder(new LineBorder(BORDER, 1, true));
-		btnScan.setBounds(fx, 386, fw, 36);
-		rightPanel.add(btnScan);
-
 		// ---- Divider: create ----
 		JSeparator sepNewL = new JSeparator();
 		sepNewL.setForeground(BORDER);
-		sepNewL.setBounds(fx, 449, 88, 2);
+		sepNewL.setBounds(fx, 486, 88, 2);
 		rightPanel.add(sepNewL);
 
 		JLabel lblNewOr = new JLabel("Or create a new team");
 		lblNewOr.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewOr.setForeground(MUTED);
 		lblNewOr.setFont(new Font(FONT, Font.PLAIN, 9));
-		lblNewOr.setBounds(fx + 90, 442, fw - 180, 16);
+		lblNewOr.setBounds(fx + 90, 478, fw - 180, 16);
 		rightPanel.add(lblNewOr);
 
 		JSeparator sepNewR = new JSeparator();
 		sepNewR.setForeground(BORDER);
-		sepNewR.setBounds(fx + fw - 90, 449, 90, 2);
+		sepNewR.setBounds(fx + fw - 90, 486, 90, 2);
 		rightPanel.add(sepNewR);
 
 		// ---- Team card ----
 		JPanel cardPanel = new JPanel();
 		cardPanel.setBackground(CARD_BG);
 		cardPanel.setBorder(new LineBorder(CARD_LINE, 1, true));
-		cardPanel.setBounds(fx, 474, fw, 183);
+		cardPanel.setBounds(fx, 510, fw, 183);
 		cardPanel.setLayout(null);
 		rightPanel.add(cardPanel);
 
@@ -314,26 +354,30 @@ public class JoinList extends JPanel {
 		lblCardTitle.setBounds(48, 14, 240, 16);
 		cardPanel.add(lblCardTitle);
 
-		JLabel lblCardDesc = new JLabel("<html>You\u2019re the first person in? Start a new team list and generate an invite code to share with teammates.</html>");
+		JLabel lblCardDesc = new JLabel(
+				"<html>You\u2019re the first person in? Start a new team list and generate an invite code to share with teammates.</html>");
 		lblCardDesc.setVerticalAlignment(SwingConstants.TOP);
 		lblCardDesc.setForeground(new Color(0x6B, 0x6E, 0x66));
 		lblCardDesc.setFont(new Font(FONT, Font.PLAIN, 9));
 		lblCardDesc.setBounds(48, 31, 245, 30);
 		cardPanel.add(lblCardDesc);
 
-		JLabel lblCheck1 = new JLabel("<html><span style='color:#E0C97F'>\u2714</span>&nbsp;&nbsp; Create a new team to-do list from scratch.</html>");
+		JLabel lblCheck1 = new JLabel(
+				"<html><span style='color:#E0C97F'>\u2714</span>&nbsp;&nbsp; Create a new team to-do list from scratch.</html>");
 		lblCheck1.setForeground(new Color(0x4A, 0x4D, 0x44));
 		lblCheck1.setFont(new Font(FONT, Font.PLAIN, 9));
 		lblCheck1.setBounds(14, 67, 280, 16);
 		cardPanel.add(lblCheck1);
 
-		JLabel lblCheck2 = new JLabel("<html><span style='color:#E0C97F'>\u2714</span>&nbsp;&nbsp; Generate a unique invite code to share with teammates.</html>");
+		JLabel lblCheck2 = new JLabel(
+				"<html><span style='color:#E0C97F'>\u2714</span>&nbsp;&nbsp; Generate a unique invite code to share with teammates.</html>");
 		lblCheck2.setForeground(new Color(0x4A, 0x4D, 0x44));
 		lblCheck2.setFont(new Font(FONT, Font.PLAIN, 9));
 		lblCheck2.setBounds(14, 87, 285, 16);
 		cardPanel.add(lblCheck2);
 
-		JLabel lblCheck3 = new JLabel("<html><span style='color:#E0C97F'>\u2714</span>&nbsp;&nbsp; Start assigning tasks and tracking progress together.</html>");
+		JLabel lblCheck3 = new JLabel(
+				"<html><span style='color:#E0C97F'>\u2714</span>&nbsp;&nbsp; Start assigning tasks and tracking progress together.</html>");
 		lblCheck3.setForeground(new Color(0x4A, 0x4D, 0x44));
 		lblCheck3.setFont(new Font(FONT, Font.PLAIN, 9));
 		lblCheck3.setBounds(14, 107, 285, 16);
@@ -346,7 +390,9 @@ public class JoinList extends JPanel {
 		btnGenerate.setFocusPainted(false);
 		btnGenerate.setBorder(new LineBorder(GOLD, 1, true));
 		btnGenerate.setBounds(14, 132, 276, 36);
-		btnGenerate.addActionListener(e -> {frame.showPage(app.AppFrame.INVITE_READY);});
+		btnGenerate.addActionListener(e -> {
+			frame.showPage(app.AppFrame.INVITE_READY);
+		});
 		cardPanel.add(btnGenerate);
 
 		// ---- Already a member ----
@@ -355,7 +401,7 @@ public class JoinList extends JPanel {
 		lblMember.setForeground(MUTED);
 		lblMember.setFont(new Font(FONT, Font.PLAIN, 10));
 		lblMember.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		lblMember.setBounds(fx, 676, fw, 16);
+		lblMember.setBounds(fx, 712, fw, 16);
 		lblMember.addMouseListener(new java.awt.event.MouseAdapter() {
 			public void mouseClicked(java.awt.event.MouseEvent evt) {
 				frame.showPage(app.AppFrame.LOGIN);
@@ -381,7 +427,7 @@ public class JoinList extends JPanel {
 		lblTerms.setFont(new Font(FONT, Font.PLAIN, 9));
 		lblTerms.setBounds(450, 705, 40, 14);
 		rightPanel.add(lblTerms);
-		
+
 		JScrollPane scrollPane = new JScrollPane(contentPane);
 		scrollPane.setBorder(null);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -437,7 +483,9 @@ public class JoinList extends JPanel {
 		});
 	}
 
-	/** Loads an image from the classpath (src/images/...) and scales it smoothly. */
+	/**
+	 * Loads an image from the classpath (src/images/...) and scales it smoothly.
+	 */
 	private static ImageIcon scaled(String path, int w, int h) {
 		java.net.URL url = JoinList.class.getResource("/" + path);
 		if (url == null) {
