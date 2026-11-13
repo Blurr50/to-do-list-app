@@ -105,7 +105,7 @@ public class TeamTodoList extends JPanel {
 		btnGo.setBorder(new LineBorder(GOLD, 1, true));
 		btnGo.setBounds(870, 20, 80, 20);
 		btnGo.addActionListener(e -> {
-			// MAYBE: authentication here?
+			// MAYBE: clear data here?
 			
 			
 			
@@ -129,7 +129,8 @@ public class TeamTodoList extends JPanel {
 		lblInviteCaption.setBounds(13, 7, 100, 12);
 		invitePanel.add(lblInviteCaption);
 
-		lblInviteCode = new JLabel("67DODO");
+		lblInviteCode = new JLabel();
+		setInviteCodeText("67DODO"); // get from database
 		lblInviteCode.setForeground(DARK);
 		lblInviteCode.setFont(new Font(FONT, Font.BOLD, 17));
 		lblInviteCode.setBounds(13, 21, 90, 26);

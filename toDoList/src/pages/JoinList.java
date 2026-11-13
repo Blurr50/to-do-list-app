@@ -301,6 +301,12 @@ public class JoinList extends JPanel {
 						+ txtCode5.getText() + txtCode6.getText());
 				if (code.length() < 6) {
 					JOptionPane.showMessageDialog(JoinList.this, "Please enter all 6 characters.");
+				} else if (!code.matches("[A-Z0-9]{6}")) {
+					JOptionPane.showMessageDialog(JoinList.this, "Invite code must be 6 letters or numbers.");
+				} else if (txtEmail.getText().trim().isEmpty()) {
+					JOptionPane.showMessageDialog(JoinList.this, "Please enter your email.");
+				} else if (txtPassword.getPassword().length == 0) {
+					JOptionPane.showMessageDialog(JoinList.this, "Please enter your password.");
 				} else {
 					// TODO: real authentication here
 					
@@ -309,6 +315,8 @@ public class JoinList extends JPanel {
 					
 					
 					JOptionPane.showMessageDialog(JoinList.this, "Joining list " + code + "...");
+					frame.setInviteCodeText(code);
+					frame.showPage(app.AppFrame.MAIN);
 				}
 			}
 		});

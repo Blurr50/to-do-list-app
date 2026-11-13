@@ -242,8 +242,6 @@ public class AddTask extends JPanel {
 		lblBack.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				// TODO: open your TeamTodoList screen here, e.g.
-				// new TeamTodoList().setVisible(true); dispose();
 				frame.showPage(app.AppFrame.MAIN);
 
 			}

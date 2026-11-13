@@ -184,12 +184,30 @@ public class InviteReady extends JPanel {
 		lblCodeCaption.setFont(new Font(FONT, Font.PLAIN, 9));
 		lblCodeCaption.setBounds(0, 13, fw, 14);
 		codeCard.add(lblCodeCaption);
+		
+		final JLabel lblRefresh = new JLabel("\uD83D\u21BA");
+		lblRefresh.setForeground(MUTED);
+		lblRefresh.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 14));
+		lblRefresh.setBounds(fw - 35, 10, 20, 20);
+		lblRefresh.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+		codeCard.add(lblRefresh);
 
-		lblInviteCode = new JLabel(inviteCode);
+
+		lblRefresh.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				setInviteCode("NEW");
+			}
+		});
+		
+		lblInviteCode = new JLabel();
 		lblInviteCode.setHorizontalAlignment(SwingConstants.CENTER);
 		lblInviteCode.setForeground(DARK);
 		lblInviteCode.setFont(new Font(FONT, Font.BOLD, 28));
 		lblInviteCode.setBounds(0, 31, fw, 40);
+		
+		// generate invite code
+		setInviteCode("NEW");
 		codeCard.add(lblInviteCode);
 
 		final JButton btnCopyCode = new JButton("\u29C9  Copy code");
@@ -326,6 +344,20 @@ public class InviteReady extends JPanel {
 
 	/** Call this to show a real generated code (e.g. from the previous screen). */
 	public void setInviteCode(String code) {
+		if (code == "NEW") {
+			while (true) {
+				code = "";
+				for(int i = 0; i < 6; i++) {
+					char c = (char) ('A' + (int) (Math.random() * 26));
+					code += c;
+				}
+				//Check if code already exists in database, if it does, generate a new one
+				break;
+			}
+			
+		} else if (code == null || code.length() != 6) {
+			throw new IllegalArgumentException("Invite code must be 6 characters");
+		}
 		this.inviteCode = code;
 		lblInviteCode.setText(code);
 	}
@@ -358,5 +390,8 @@ public class InviteReady extends JPanel {
 		}
 		ImageIcon raw = new ImageIcon(url);
 		return new ImageIcon(raw.getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH));
+	}
+	public String getInviteCode() {
+		return inviteCode;
 	}
 }
