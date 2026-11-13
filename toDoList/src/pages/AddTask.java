@@ -169,13 +169,13 @@ public class AddTask extends JPanel {
 		navMine.setBounds(9, 140, 156, 36);
 		sidebar.add(navMine);
 
-		NavItem navDone = new NavItem("\u2714", "Completed", "1", false);
-		navDone.setBounds(9, 183, 156, 36);
-		sidebar.add(navDone);
-
 		NavItem navPeople = new NavItem("\u263A", "Team", "1", false);
-		navPeople.setBounds(9, 226, 156, 36);
+		navPeople.setBounds(9, 183, 156, 36);
 		sidebar.add(navPeople);
+
+		NavItem navDone = new NavItem("\u2714", "Completed", "1", false);
+		navDone.setBounds(9, 226, 156, 36);
+		sidebar.add(navDone);
 
 		JPanel smallSteps = new JPanel();
 		smallSteps.setBackground(PAGE_BG);

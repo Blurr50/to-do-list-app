@@ -7,10 +7,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
-import pages.AddTaskPanel;
-import pages.CreateAccountPanel;
-import pages.MainPanel;
 import pages.ToDodoLogin;
+import pages.JoinList;
+import pages.InviteReady;
+import pages.TeamTodoList;
+import pages.AddTask;
 
 public class AppFrame extends JFrame {
 
@@ -26,7 +27,7 @@ public class AppFrame extends JFrame {
 	private final JPanel root = new JPanel(cards);
 
 	// Keep direct references instead of root.getComponent(index)
-	private final pages.TeamTodoList teamTodoList;
+	private final TeamTodoList teamTodoList;
 
 	public AppFrame() {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -34,13 +35,13 @@ public class AppFrame extends JFrame {
 		setLocationRelativeTo(null);
 
 		// Register every page with a name
-		teamTodoList = new pages.TeamTodoList(this);
+		teamTodoList = new TeamTodoList(this);
 
 		root.add(new ToDodoLogin(this), LOGIN);
-		root.add(new pages.JoinList(this), CREATE_ACCOUNT);
-		root.add(new pages.InviteReady(this), INVITE_READY);
+		root.add(new JoinList(this), CREATE_ACCOUNT);
+		root.add(new InviteReady(this), INVITE_READY);
 		root.add(teamTodoList, MAIN);
-		root.add(new pages.AddTask(this), ADD_TASK);
+		root.add(new AddTask(this), ADD_TASK);
 
 		setContentPane(root);
 
@@ -60,12 +61,15 @@ public class AppFrame extends JFrame {
 	public void setInviteCodeText(String text) {
 		teamTodoList.setInviteCodeText(text);
 	}
+
 	public void refreshTasks(String page) {
 		teamTodoList.refreshTasks(page);
 	}
+
 	public model.User getCurrentUser() {
 		return teamTodoList.getCurrentUser();
 	}
+
 	public void setCurrentUser(model.User user) {
 		teamTodoList.setCurrentUser(user);
 	}
