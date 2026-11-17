@@ -16,6 +16,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
@@ -24,7 +28,9 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
@@ -70,6 +76,18 @@ public class AddTask extends JPanel {
 	private JComboBox<String> cmbDue;
 	private JComboBox<String> cmbPriority;
 	private JComboBox<String> cmbStatus;
+	private JComboBox<String> cmbAssignee;
+	private JLabel lblInviteCode, lblMembers, lblMeName, lblMeRole, lblTitle, lblSubtitle, lblOnlyMember;
+	private JButton btnAddTask;
+	private NavItem navTeam, navMine, navPeople, navDone;
+
+	private static final String PICK_DATE = "Pick a date\u2026";
+
+	private model.User user; // the logged-in user (set by showForm)
+	private model.Task editing; // the task being edited, or null when adding a new one
+	private List<model.User> members = new ArrayList<model.User>();
+	private LocalDate customDue; // date chosen with "Pick a date..."
+	private boolean updatingForm; // true while the form is being filled in by code
 
 	public AddTask(app.AppFrame frame) {
 		frame.setTitle("To-Dodo List - Add task");
@@ -110,7 +128,7 @@ public class AddTask extends JPanel {
 		lblInviteCaption.setBounds(13, 7, 100, 12);
 		invitePanel.add(lblInviteCaption);
 
-		JLabel lblInviteCode = new JLabel("67DODO");
+		lblInviteCode = new JLabel("67DODO");
 		lblInviteCode.setForeground(DARK);
 		lblInviteCode.setFont(new Font(FONT, Font.BOLD, 17));
 		lblInviteCode.setBounds(13, 20, 90, 26);
@@ -124,7 +142,7 @@ public class AddTask extends JPanel {
 		lblCopyIcon.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection("67DODO"), null);
+				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(lblInviteCode.getText()), null);
 			}
 		});
 		invitePanel.add(lblCopyIcon);
@@ -134,6 +152,13 @@ public class AddTask extends JPanel {
 		lblProfile.setFont(new Font(EMOJI, Font.PLAIN, 13));
 		lblProfile.setBounds(1164, 19, 30, 30);
 		topBar.add(lblProfile);
+		lblProfile.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		lblProfile.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				showProfileMenu(frame, lblProfile);
+			}
+		});
 
 		// =============== SIDEBAR ===============
 		JPanel sidebar = new JPanel();
@@ -155,27 +180,52 @@ public class AddTask extends JPanel {
 		lblTeamName.setBounds(18, 36, 140, 24);
 		sidebar.add(lblTeamName);
 
-		JLabel lblMembers = new JLabel("1 member \u00B7 Just you for now");
+		lblMembers = new JLabel("1 member \u00B7 Just you for now");
 		lblMembers.setForeground(MUTED);
 		lblMembers.setFont(new Font(FONT, Font.PLAIN, 8));
 		lblMembers.setBounds(18, 62, 150, 14);
 		sidebar.add(lblMembers);
 
-		NavItem navTeam = new NavItem("\u2630", "Team to-do list", "5", true);
+		navTeam = new NavItem("\u2630", "Team to-do list", "0", true);
 		navTeam.setBounds(9, 97, 156, 36);
 		sidebar.add(navTeam);
 
-		NavItem navMine = new NavItem("\u2611", "My tasks", "4", false);
+		navMine = new NavItem("\u2611", "My tasks", "0", false);
 		navMine.setBounds(9, 140, 156, 36);
 		sidebar.add(navMine);
 
-		NavItem navPeople = new NavItem("\u263A", "Team", "1", false);
+		navPeople = new NavItem("\u263A", "Team", "0", false);
 		navPeople.setBounds(9, 183, 156, 36);
 		sidebar.add(navPeople);
 
-		NavItem navDone = new NavItem("\u2714", "Completed", "1", false);
+		navDone = new NavItem("\u2714", "Completed", "0", false);
 		navDone.setBounds(9, 226, 156, 36);
 		sidebar.add(navDone);
+
+		navTeam.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				frame.showTaskList("ALL");
+			}
+		});
+		navMine.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				frame.showTaskList("USER");
+			}
+		});
+		navPeople.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				frame.showTeamMembers();
+			}
+		});
+		navDone.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				frame.showTaskList("COMPLETED");
+			}
+		});
 
 		JPanel smallSteps = new JPanel();
 		smallSteps.setBackground(PAGE_BG);
@@ -215,13 +265,13 @@ public class AddTask extends JPanel {
 		lblMeAvatar.setBounds(15, 688, 28, 28);
 		sidebar.add(lblMeAvatar);
 
-		JLabel lblMeName = new JLabel("You");
+		lblMeName = new JLabel("You");
 		lblMeName.setForeground(DARK);
 		lblMeName.setFont(new Font(FONT, Font.BOLD, 9));
 		lblMeName.setBounds(50, 689, 100, 13);
 		sidebar.add(lblMeName);
 
-		JLabel lblMeRole = new JLabel("Team creator");
+		lblMeRole = new JLabel("Team creator");
 		lblMeRole.setForeground(MUTED);
 		lblMeRole.setFont(new Font(FONT, Font.PLAIN, 8));
 		lblMeRole.setBounds(50, 702, 100, 13);
@@ -242,6 +292,8 @@ public class AddTask extends JPanel {
 		lblBack.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				// TODO: open your TeamTodoList screen here, e.g.
+				// new TeamTodoList().setVisible(true); dispose();
 				frame.showPage(app.AppFrame.MAIN);
 
 			}
@@ -254,13 +306,13 @@ public class AddTask extends JPanel {
 		lblEyebrow.setBounds(211, 137, 300, 14);
 		contentPane.add(lblEyebrow);
 
-		JLabel lblTitle = new JLabel("Add task");
+		lblTitle = new JLabel("Add task");
 		lblTitle.setForeground(DARK);
 		lblTitle.setFont(new Font(FONT, Font.BOLD, 30));
 		lblTitle.setBounds(211, 151, 400, 44);
 		contentPane.add(lblTitle);
 
-		JLabel lblSubtitle = new JLabel("Turn your next step into a little win.");
+		lblSubtitle = new JLabel("Turn your next step into a little win.");
 		lblSubtitle.setForeground(BODY);
 		lblSubtitle.setFont(new Font(FONT, Font.PLAIN, 10));
 		lblSubtitle.setBounds(211, 197, 400, 16);
@@ -359,9 +411,10 @@ public class AddTask extends JPanel {
 		lblStatusIcon.setBounds(509, 340, 18, 20);
 		formCard.add(lblStatusIcon);
 
-		cmbDue = new JComboBox<String>(new String[] { "No due date", "Today", "Tomorrow", "Next week" });
+		cmbDue = new JComboBox<String>(new String[] { "No due date", "Today", "Tomorrow", "Next week", PICK_DATE });
 		styleCombo(cmbDue);
 		cmbDue.setBounds(25, 330, 220, 39);
+		cmbDue.addActionListener(e -> onDueChosen());
 		formCard.add(cmbDue);
 
 		cmbPriority = new JComboBox<String>(new String[] { "Low", "Medium", "High" });
@@ -386,24 +439,24 @@ public class AddTask extends JPanel {
 		lblAssignAvatar.setBounds(25, 410, 30, 30);
 		formCard.add(lblAssignAvatar);
 
-		JLabel lblAssigned = new JLabel("Assigned to you");
+		JLabel lblAssigned = new JLabel("Assign to");
 		lblAssigned.setForeground(DARK);
 		lblAssigned.setFont(new Font(FONT, Font.BOLD, 9));
-		lblAssigned.setBounds(65, 410, 250, 14);
+		lblAssigned.setBounds(65, 398, 250, 14);
 		formCard.add(lblAssigned);
 
-		JLabel lblOnlyMember = new JLabel("You\u2019re the only member of My team for now.");
+		cmbAssignee = new JComboBox<String>();
+		cmbAssignee.setBackground(Color.WHITE);
+		cmbAssignee.setFont(new Font(FONT, Font.PLAIN, 10));
+		cmbAssignee.setBorder(new LineBorder(FIELD_LINE, 1, true));
+		cmbAssignee.setBounds(65, 416, 300, 36);
+		formCard.add(cmbAssignee);
+
+		lblOnlyMember = new JLabel("");
 		lblOnlyMember.setForeground(MUTED);
 		lblOnlyMember.setFont(new Font(FONT, Font.PLAIN, 8));
-		lblOnlyMember.setBounds(65, 426, 300, 13);
+		lblOnlyMember.setBounds(385, 426, 333, 13);
 		formCard.add(lblOnlyMember);
-
-		JLabel lblCreator = new JLabel("Team creator");
-		lblCreator.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblCreator.setForeground(MUTED);
-		lblCreator.setFont(new Font(FONT, Font.PLAIN, 8));
-		lblCreator.setBounds(598, 420, 120, 13);
-		formCard.add(lblCreator);
 
 		JSeparator footSep = new JSeparator();
 		footSep.setForeground(BORDER);
@@ -431,7 +484,7 @@ public class AddTask extends JPanel {
 		});
 		formCard.add(btnCancel);
 
-		JButton btnAddTask = new JButton("+   Add task");
+		btnAddTask = new JButton("+   Add task");
 		btnAddTask.setForeground(DARK);
 		btnAddTask.setBackground(GOLD);
 		btnAddTask.setFont(new Font(FONT, Font.BOLD, 10));
@@ -559,34 +612,218 @@ public class AddTask extends JPanel {
 	// Behaviour
 	// =====================================================================
 
-	private void addTask(app.AppFrame frame) {
-
-		String taskName = txtTitle.getText();
-		String taskDescription = txtDescription.getText();
-		if (taskName.trim().isEmpty()) {
-			JOptionPane.showMessageDialog(this, "Please give your task a title.");
-			txtTitle.requestFocusInWindow();
-
+	/** Fills the form: empty for a new task, or with the details of toEdit. */
+	public void showForm(model.User current, model.Task toEdit) {
+		user = current;
+		editing = toEdit;
+		if (user == null) {
 			return;
 		}
 
-		model.User me = frame.getCurrentUser();
-		new database.TaskDAO().addTask(taskName.trim(), taskDescription, me.id(), null, me.teamId());
-		frame.refreshTasks("ALL", "ALL");
+		members = new database.UserDAO().getTeamMembers(user.teamId());
+		updatingForm = true;
+		cmbAssignee.removeAllItems();
+		int myIndex = 0;
+		for (int i = 0; i < members.size(); i++) {
+			model.User member = members.get(i);
+			cmbAssignee.addItem(member.id() == user.id() ? member.username() + " (you)" : member.username());
+			if (member.id() == user.id()) {
+				myIndex = i;
+			}
+		}
+		cmbAssignee.addItem("Unassigned");
+		updatingForm = false;
+		refreshSidebar();
 
-		String summary = "Task added!\n\nTitle: " + taskName + "\nDescription: " + txtDescription.getText().trim()
-				+ "\nDue: " + cmbDue.getSelectedItem() + "\nPriority: " + cmbPriority.getSelectedItem() + "\nStatus: "
-				+ cmbStatus.getSelectedItem();
-		JOptionPane.showMessageDialog(this, summary);
 		clearForm();
+		cmbAssignee.setSelectedIndex(myIndex); // new tasks are assigned to you unless you choose someone else
+		if (toEdit == null) {
+			lblTitle.setText("Add task");
+			lblSubtitle.setText("Turn your next step into a little win.");
+			btnAddTask.setText("+   Add task");
+			return;
+		}
+
+		lblTitle.setText("Edit task");
+		lblSubtitle.setText("Change the details, then save.");
+		btnAddTask.setText("Save changes");
+		txtTitle.setText(toEdit.title());
+		txtDescription.setText(toEdit.description() == null ? "" : toEdit.description());
+		cmbPriority.setSelectedItem(model.Task.priorityLabel(toEdit.priority()));
+		cmbStatus.setSelectedItem(model.Task.statusLabel(toEdit.status()));
+		selectDue(toEdit.dueDate());
+		cmbAssignee.setSelectedIndex(members.size()); // "Unassigned" unless the task has an assignee
+		for (int i = 0; i < members.size(); i++) {
+			if (toEdit.assignedTo() != null && members.get(i).id() == toEdit.assignedTo()) {
+				cmbAssignee.setSelectedIndex(i);
+			}
+		}
+	}
+
+	private void addTask(app.AppFrame frame) {
+		String title = txtTitle.getText().trim();
+		if (title.isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Please give your task a title.");
+			txtTitle.requestFocusInWindow();
+			return;
+		}
+		if (user == null) {
+			return;
+		}
+
+		String description = txtDescription.getText().trim();
+		String dueDate = selectedDueDate();
+		int priority = model.Task.priorityFromLabel((String) cmbPriority.getSelectedItem());
+		String status = model.Task.statusFromLabel((String) cmbStatus.getSelectedItem());
+		int assigneeIndex = cmbAssignee.getSelectedIndex();
+		Integer assignedTo = assigneeIndex >= 0 && assigneeIndex < members.size() ? members.get(assigneeIndex).id()
+				: null;
+
+		database.TaskDAO dao = new database.TaskDAO();
+		boolean saved;
+		if (editing == null) {
+			saved = dao.addTask(title, description, user.id(), assignedTo, user.teamId(), dueDate, priority,
+					status) > 0;
+		} else {
+			saved = dao.editTask(editing.id(), user.id(), title, description, assignedTo, dueDate, priority,
+					status);
+		}
+		if (!saved) {
+			JOptionPane.showMessageDialog(this, "The task could not be saved.");
+			return;
+		}
+
+		clearForm();
+		frame.refreshTasks(null); // reload the list, keeping the page the user was on
+		frame.showPage(app.AppFrame.MAIN);
 	}
 
 	private void clearForm() {
 		txtTitle.setText("");
 		txtDescription.setText("");
-		cmbDue.setSelectedIndex(0);
+		selectDue(null);
 		cmbPriority.setSelectedItem("Medium");
 		cmbStatus.setSelectedIndex(0);
+	}
+
+	// ---- due date drop-down: No due date / Today / Tomorrow / Next week / Pick a date / (a picked date)
+
+	/** Called when the user picks something in the due-date drop-down. */
+	private void onDueChosen() {
+		if (updatingForm || !PICK_DATE.equals(cmbDue.getSelectedItem())) {
+			return;
+		}
+		String text = JOptionPane.showInputDialog(this, "Due date (yyyy-mm-dd):",
+				LocalDate.now().plusDays(3).toString());
+		LocalDate picked = null;
+		if (text != null) {
+			try {
+				picked = LocalDate.parse(text.trim());
+			} catch (DateTimeParseException ex) {
+				JOptionPane.showMessageDialog(this, "Due date must look like 2026-12-31");
+			}
+		}
+		setCustomDue(picked);
+	}
+
+	/** Shows a specific date as an extra entry at the end of the drop-down (null = no due date). */
+	private void setCustomDue(LocalDate date) {
+		updatingForm = true;
+		while (cmbDue.getItemCount() > 5) {
+			cmbDue.removeItemAt(5);
+		}
+		customDue = date;
+		if (date == null) {
+			cmbDue.setSelectedIndex(0);
+		} else {
+			cmbDue.addItem(date.toString());
+			cmbDue.setSelectedIndex(5);
+		}
+		updatingForm = false;
+	}
+
+	/** Selects the entry matching a stored due date (an ISO date or null). */
+	private void selectDue(String isoDate) {
+		LocalDate date = null;
+		if (isoDate != null) {
+			try {
+				date = LocalDate.parse(isoDate);
+			} catch (DateTimeParseException ex) {
+				date = null;
+			}
+		}
+		if (date == null) {
+			setCustomDue(null);
+		} else if (date.equals(LocalDate.now())) {
+			setCustomDue(null);
+			updatingForm = true;
+			cmbDue.setSelectedIndex(1);
+			updatingForm = false;
+		} else if (date.equals(LocalDate.now().plusDays(1))) {
+			setCustomDue(null);
+			updatingForm = true;
+			cmbDue.setSelectedIndex(2);
+			updatingForm = false;
+		} else if (date.equals(LocalDate.now().plusDays(7))) {
+			setCustomDue(null);
+			updatingForm = true;
+			cmbDue.setSelectedIndex(3);
+			updatingForm = false;
+		} else {
+			setCustomDue(date);
+		}
+	}
+
+	/** The due date chosen in the form as an ISO date, or null for no due date. */
+	private String selectedDueDate() {
+		switch (cmbDue.getSelectedIndex()) {
+		case 1:
+			return LocalDate.now().toString();
+		case 2:
+			return LocalDate.now().plusDays(1).toString();
+		case 3:
+			return LocalDate.now().plusDays(7).toString();
+		case 5:
+			return customDue == null ? null : customDue.toString();
+		default:
+			return null;
+		}
+	}
+
+	// ---- sidebar + top bar
+
+	private void refreshSidebar() {
+		lblInviteCode.setText(user.inviteCode());
+		lblMeName.setText(user.username());
+		boolean creator = !members.isEmpty() && members.get(0).id() == user.id();
+		lblMeRole.setText(creator ? "Team creator" : "Member");
+		lblMembers.setText(members.size() == 1 ? "1 member \u00B7 Just you for now" : members.size() + " members");
+		lblOnlyMember.setText(members.size() == 1 ? "You\u2019re the only member of My team for now."
+				: "Teammates can be given this task too.");
+
+		database.TaskDAO dao = new database.TaskDAO();
+		java.util.List<model.Task> team = dao.getTasksForTeam(user.teamId());
+		int done = 0;
+		for (model.Task t : team) {
+			if (t.complete()) {
+				done++;
+			}
+		}
+		navTeam.setCount(team.size());
+		navMine.setCount(dao.getTasksForUser(user.id()).size());
+		navPeople.setCount(members.size());
+		navDone.setCount(done);
+	}
+
+	private void showProfileMenu(app.AppFrame frame, Component anchor) {
+		JPopupMenu menu = new JPopupMenu();
+		JMenuItem who = new JMenuItem(user == null ? "Not signed in" : "Signed in as " + user.username());
+		who.setEnabled(false);
+		menu.add(who);
+		JMenuItem logOut = new JMenuItem("Log out");
+		logOut.addActionListener(e -> frame.logOut());
+		menu.add(logOut);
+		menu.show(anchor, 0, anchor.getHeight());
 	}
 
 	/**
@@ -691,6 +928,11 @@ public class AddTask extends JPanel {
 	/** One entry in the sidebar menu. */
 	static class NavItem extends JPanel {
 		private static final long serialVersionUID = 1L;
+		private JLabel lblCount;
+
+		void setCount(int n) {
+			lblCount.setText(String.valueOf(n));
+		}
 
 		NavItem(String icon, String text, String count, boolean selected) {
 			setLayout(null);
@@ -714,7 +956,7 @@ public class AddTask extends JPanel {
 			lblText.setBounds(35, 8, 95, 20);
 			add(lblText);
 
-			JLabel lblCount = new JLabel(count, SwingConstants.RIGHT);
+			lblCount = new JLabel(count, SwingConstants.RIGHT);
 			lblCount.setForeground(BODY);
 			lblCount.setFont(new Font(FONT, Font.BOLD, 8));
 			lblCount.setBounds(120, 8, 24, 20);
@@ -722,3 +964,4 @@ public class AddTask extends JPanel {
 		}
 	}
 }
+
