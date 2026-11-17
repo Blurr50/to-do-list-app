@@ -1,7 +1,6 @@
 package pages;
 
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -10,14 +9,15 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
@@ -27,28 +27,24 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import pages.ToDodoLogin.PlaceholderPasswordField;
-import pages.ToDodoLogin.PlaceholderTextField;
-
 /**
  * To-Dodo List - "Your team list is ready" screen (Swing / WindowBuilder).
- * Images are loaded from the classpath: src/images/dodo.png and
- * src/images/team.png
+ * Images are loaded from the classpath: src/images/dodo.png and src/images/team.png
  */
 public class InviteReady extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
 	// Palette
-	private static final Color LEFT_BG = new Color(0xF6, 0xF3, 0xE8);
-	private static final Color RIGHT_BG = new Color(0xFF, 0xFE, 0xF9);
-	private static final Color DARK = new Color(0x37, 0x3B, 0x30);
-	private static final Color MUTED = new Color(0x8A, 0x8D, 0x93);
-	private static final Color LIGHT = new Color(0xA9, 0xAB, 0xB3);
-	private static final Color BORDER = new Color(0xE2, 0xE3, 0xE6);
-	private static final Color GOLD = new Color(0xE0, 0xC9, 0x7F);
-	private static final Color GOLD_LINE = new Color(0xEB, 0xDF, 0xAE);
-	private static final Color GOLD_DARK = new Color(0x6B, 0x5A, 0x2A);
+	private static final Color LEFT_BG    = new Color(0xF6, 0xF3, 0xE8);
+	private static final Color RIGHT_BG   = new Color(0xFF, 0xFE, 0xF9);
+	private static final Color DARK       = new Color(0x37, 0x3B, 0x30);
+	private static final Color MUTED      = new Color(0x8A, 0x8D, 0x93);
+	private static final Color LIGHT      = new Color(0xA9, 0xAB, 0xB3);
+	private static final Color BORDER     = new Color(0xE2, 0xE3, 0xE6);
+	private static final Color GOLD       = new Color(0xE0, 0xC9, 0x7F);
+	private static final Color GOLD_LINE  = new Color(0xEB, 0xDF, 0xAE);
+	private static final Color GOLD_DARK  = new Color(0x6B, 0x5A, 0x2A);
 
 	private static final String FONT = "Segoe UI";
 
@@ -57,9 +53,9 @@ public class InviteReady extends JPanel {
 
 	private JPanel contentPane;
 	private JLabel lblInviteCode;
+	private JTextField txtUsername;
+	private JPasswordField txtPassword;
 
-	private PlaceholderTextField txtEmail;
-	private PlaceholderPasswordField txtPassword;
 
 	public InviteReady(app.AppFrame frame) {
 		frame.setTitle("To-Dodo List - Invite ready");
@@ -93,8 +89,7 @@ public class InviteReady extends JPanel {
 		lblTag.setBounds(0, 91, 686, 14);
 		leftPanel.add(lblTag);
 
-		JLabel lblHeadline = new JLabel(
-				"<html><div style='text-align:center'>Good days start with<br>one small step.</div></html>");
+		JLabel lblHeadline = new JLabel("<html><div style='text-align:center'>Good days start with<br>one small step.</div></html>");
 		lblHeadline.setHorizontalAlignment(SwingConstants.CENTER);
 		lblHeadline.setForeground(DARK);
 		lblHeadline.setFont(new Font(FONT, Font.BOLD, 36));
@@ -114,8 +109,7 @@ public class InviteReady extends JPanel {
 		lblIllustration.setBounds(0, 244, 686, 312);
 		leftPanel.add(lblIllustration);
 
-		JLabel lblWins = new JLabel(
-				"<html><span style='color:#E0C97F'>\u2714</span>&nbsp; Less overwhelm. More little wins.</html>");
+		JLabel lblWins = new JLabel("<html><span style='color:#E0C97F'>\u2714</span>&nbsp; Less overwhelm. More little wins.</html>");
 		lblWins.setHorizontalAlignment(SwingConstants.CENTER);
 		lblWins.setForeground(GOLD_DARK);
 		lblWins.setFont(new Font(FONT, Font.BOLD, 10));
@@ -136,8 +130,8 @@ public class InviteReady extends JPanel {
 		rightPanel.setLayout(null);
 		contentPane.add(rightPanel);
 
-		final int fx = 115; // form left
-		final int fw = 306; // form width
+		final int fx = 115;   // form left
+		final int fw = 306;   // form width
 
 		JLabel lblCheckBadge = new JLabel("\u2714");
 		lblCheckBadge.setHorizontalAlignment(SwingConstants.CENTER);
@@ -162,8 +156,7 @@ public class InviteReady extends JPanel {
 		lblHeading.setBounds(fx, 100, fw + 40, 80);
 		rightPanel.add(lblHeading);
 
-		JLabel lblShare = new JLabel(
-				"<html>Share this code or invite link with teammates so they can join your new to-do list.</html>");
+		JLabel lblShare = new JLabel("<html>Share this code with teammates so they can join your new to-do list.</html>");
 		lblShare.setVerticalAlignment(SwingConstants.TOP);
 		lblShare.setForeground(new Color(0x6B, 0x6E, 0x66));
 		lblShare.setFont(new Font(FONT, Font.PLAIN, 10));
@@ -184,30 +177,12 @@ public class InviteReady extends JPanel {
 		lblCodeCaption.setFont(new Font(FONT, Font.PLAIN, 9));
 		lblCodeCaption.setBounds(0, 13, fw, 14);
 		codeCard.add(lblCodeCaption);
-		
-		final JLabel lblRefresh = new JLabel("\uD83D\u21BA");
-		lblRefresh.setForeground(MUTED);
-		lblRefresh.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 14));
-		lblRefresh.setBounds(fw - 35, 10, 20, 20);
-		lblRefresh.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-		codeCard.add(lblRefresh);
 
-
-		lblRefresh.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				setInviteCode("NEW");
-			}
-		});
-		
-		lblInviteCode = new JLabel();
+		lblInviteCode = new JLabel(inviteCode);
 		lblInviteCode.setHorizontalAlignment(SwingConstants.CENTER);
 		lblInviteCode.setForeground(DARK);
 		lblInviteCode.setFont(new Font(FONT, Font.BOLD, 28));
 		lblInviteCode.setBounds(0, 31, fw, 40);
-		
-		// generate invite code
-		setInviteCode("NEW");
 		codeCard.add(lblInviteCode);
 
 		final JButton btnCopyCode = new JButton("\u29C9  Copy code");
@@ -224,92 +199,75 @@ public class InviteReady extends JPanel {
 			}
 		});
 		codeCard.add(btnCopyCode);
-		
-		// ---- Email ----
-		JLabel lblEmail = new JLabel("Email address");
-		lblEmail.setForeground(DARK);
-		lblEmail.setFont(new Font(FONT, Font.BOLD, 11));
-		lblEmail.setBounds(fx, 373, fw, 16);
-		rightPanel.add(lblEmail);
 
-		JLabel lblEmailIcon = new JLabel("\u2709");
-		lblEmailIcon.setForeground(MUTED);
-		lblEmailIcon.setFont(new Font(FONT, Font.PLAIN, 15));
-		lblEmailIcon.setBounds(fx + 12, 404, 20, 20);
-		rightPanel.add(lblEmailIcon);
+		// ---- Account details (the team creator picks a username + password) ----
+		JLabel lblAccount = new JLabel("Create your login");
+		lblAccount.setForeground(DARK);
+		lblAccount.setFont(new Font(FONT, Font.BOLD, 12));
+		lblAccount.setBounds(fx, 376, fw, 18);
+		rightPanel.add(lblAccount);
 
-		txtEmail = new PlaceholderTextField("you@example.com");
-		txtEmail.setFont(new Font(FONT, Font.PLAIN, 12));
-		txtEmail.setBorder(new CompoundBorder(new LineBorder(BORDER, 1, true), new EmptyBorder(0, 36, 0, 10)));
-		txtEmail.setBounds(fx, 394, fw, 41);
-		rightPanel.add(txtEmail);
+		JLabel lblUsername = new JLabel("Username");
+		lblUsername.setForeground(DARK);
+		lblUsername.setFont(new Font(FONT, Font.BOLD, 10));
+		lblUsername.setBounds(fx, 402, 147, 14);
+		rightPanel.add(lblUsername);
 
-		// ---- Password ----
 		JLabel lblPassword = new JLabel("Password");
 		lblPassword.setForeground(DARK);
-		lblPassword.setFont(new Font(FONT, Font.BOLD, 11));
-		lblPassword.setBounds(fx, 448, fw, 16);
+		lblPassword.setFont(new Font(FONT, Font.BOLD, 10));
+		lblPassword.setBounds(fx + 159, 402, 147, 14);
 		rightPanel.add(lblPassword);
 
-		JLabel lblLockIcon = new JLabel("\uD83D\uDD12");
-		lblLockIcon.setForeground(MUTED);
-		lblLockIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 13));
-		lblLockIcon.setBounds(fx + 12, 485, 20, 20);
-		rightPanel.add(lblLockIcon);
+		txtUsername = new JTextField();
+		txtUsername.setFont(new Font(FONT, Font.PLAIN, 12));
+		txtUsername.setBorder(new CompoundBorder(new LineBorder(BORDER, 1, true), new EmptyBorder(0, 10, 0, 10)));
+		txtUsername.setBounds(fx, 420, 147, 34);
+		rightPanel.add(txtUsername);
 
-		final JLabel lblEye = new JLabel("\uD83D\uDC41");
-		lblEye.setForeground(MUTED);
-		lblEye.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 14));
-		lblEye.setBounds(fx + fw - 30, 485, 20, 20);
-		lblEye.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-		rightPanel.add(lblEye);
-
-		txtPassword = new PlaceholderPasswordField("Enter your password");
+		txtPassword = new JPasswordField();
 		txtPassword.setFont(new Font(FONT, Font.PLAIN, 12));
-		txtPassword.setBorder(new CompoundBorder(new LineBorder(BORDER, 1, true), new EmptyBorder(0, 36, 0, 36)));
-		txtPassword.setBounds(fx, 475, fw, 41);
+		txtPassword.setBorder(new CompoundBorder(new LineBorder(BORDER, 1, true), new EmptyBorder(0, 10, 0, 10)));
+		txtPassword.setBounds(fx + 159, 420, 147, 34);
 		rightPanel.add(txtPassword);
 
-		lblEye.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				// toggle show / hide password
-				boolean hidden = txtPassword.getEchoChar() != 0;
-				txtPassword.setEchoChar(hidden ? (char) 0 : '\u2022');
-			}
-		});
+		JLabel lblRules = new JLabel("At least 3 characters for the username and 6 for the password.");
+		lblRules.setForeground(MUTED);
+		lblRules.setFont(new Font(FONT, Font.PLAIN, 9));
+		lblRules.setBounds(fx, 460, fw, 14);
+		rightPanel.add(lblRules);
 
 		// ---- Go to list ----
-		JButton btnGo = new JButton("Create List  \u2192");
+		JButton btnGo = new JButton("Go to team to-do list  \u2192");
 		btnGo.setForeground(DARK);
 		btnGo.setBackground(GOLD);
 		btnGo.setFont(new Font(FONT, Font.BOLD, 11));
 		btnGo.setFocusPainted(false);
 		btnGo.setBorder(new LineBorder(GOLD, 1, true));
-		btnGo.setBounds(fx, 539, fw, 38);
-		btnGo.addActionListener(e -> {
-			// TODO: real authentication here
-			
-			
-			
-			
-			
-			frame.showPage(app.AppFrame.MAIN);
-		});
+		btnGo.setBounds(fx, 492, fw, 38);
+		btnGo.addActionListener(e -> handleCreate(frame));
 		rightPanel.add(btnGo);
+		txtPassword.addActionListener(e -> handleCreate(frame)); // pressing Enter continues
 
-		JLabel lblMember = new JLabel("<html>Already a member? <span style='color:#8A8D93'>Sign in</span></html>");
-		lblMember.setHorizontalAlignment(SwingConstants.CENTER);
-		lblMember.setForeground(MUTED);
-		lblMember.setFont(new Font(FONT, Font.PLAIN, 10));
-		lblMember.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		lblMember.setBounds(fx, 585, fw, 16);
-		lblMember.addMouseListener(new java.awt.event.MouseAdapter() {
+		JLabel lblNoWait = new JLabel("No need to wait \u2014 start your first task now.");
+		lblNoWait.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNoWait.setForeground(MUTED);
+		lblNoWait.setFont(new Font(FONT, Font.PLAIN, 10));
+		lblNoWait.setBounds(fx, 538, fw, 16);
+		rightPanel.add(lblNoWait);
+
+		JLabel lblBack = new JLabel("\u2190   Back to join a list");
+		lblBack.setHorizontalAlignment(SwingConstants.CENTER);
+		lblBack.setForeground(MUTED);
+		lblBack.setFont(new Font(FONT, Font.PLAIN, 10));
+		lblBack.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+		lblBack.setBounds(fx, 566, fw, 16);
+		lblBack.addMouseListener(new java.awt.event.MouseAdapter() {
 			public void mouseClicked(java.awt.event.MouseEvent evt) {
-				frame.showPage(app.AppFrame.LOGIN);
+				frame.showPage(app.AppFrame.CREATE_ACCOUNT);
 			}
 		});
-		rightPanel.add(lblMember);
+		rightPanel.add(lblBack);
 
 		// ---- Footer ----
 		JLabel lblCopy = new JLabel("\u00A9 2026 To-Dodo List");
@@ -329,7 +287,7 @@ public class InviteReady extends JPanel {
 		lblTerms.setFont(new Font(FONT, Font.PLAIN, 9));
 		lblTerms.setBounds(449, 708, 40, 14);
 		rightPanel.add(lblTerms);
-
+		
 		JScrollPane scrollPane = new JScrollPane(contentPane);
 		scrollPane.setBorder(null);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -342,22 +300,39 @@ public class InviteReady extends JPanel {
 		add(scrollPane, java.awt.BorderLayout.CENTER);
 	}
 
+	/** Creates the new team (with the code on screen) and its first account, then opens the team's list. */
+	private void handleCreate(app.AppFrame frame) {
+		String username = txtUsername.getText().trim();
+		String password = String.valueOf(txtPassword.getPassword());
+		String problem = app.AppFrame.checkNewAccount(username, password);
+		if (problem != null) {
+			JOptionPane.showMessageDialog(this, problem);
+			return;
+		}
+
+		database.UserDAO dao = new database.UserDAO();
+		switch (dao.registerNewTeam(username, password, inviteCode)) {
+		case USERNAME_TAKEN:
+			JOptionPane.showMessageDialog(this, "That username is already taken.");
+			return;
+		case CODE_TAKEN:
+			// someone used this code in the meantime: hand out a fresh one
+			setInviteCode(dao.generateInviteCode());
+			JOptionPane.showMessageDialog(this,
+					"That invite code was just taken, so we made you a new one. Click again to continue.");
+			return;
+		default:
+			break;
+		}
+
+		model.User user = dao.login(username, password);
+		txtUsername.setText("");
+		txtPassword.setText("");
+		frame.logIn(user);
+	}
+
 	/** Call this to show a real generated code (e.g. from the previous screen). */
 	public void setInviteCode(String code) {
-		if (code == "NEW") {
-			while (true) {
-				code = "";
-				for(int i = 0; i < 6; i++) {
-					char c = (char) ('A' + (int) (Math.random() * 26));
-					code += c;
-				}
-				//Check if code already exists in database, if it does, generate a new one
-				break;
-			}
-			
-		} else if (code == null || code.length() != 6) {
-			throw new IllegalArgumentException("Invite code must be 6 characters");
-		}
 		this.inviteCode = code;
 		lblInviteCode.setText(code);
 	}
@@ -379,9 +354,7 @@ public class InviteReady extends JPanel {
 		timer.start();
 	}
 
-	/**
-	 * Loads an image from the classpath (src/images/...) and scales it smoothly.
-	 */
+	/** Loads an image from the classpath (src/images/...) and scales it smoothly. */
 	private static ImageIcon scaled(String path, int w, int h) {
 		java.net.URL url = InviteReady.class.getResource("/" + path);
 		if (url == null) {
@@ -391,7 +364,5 @@ public class InviteReady extends JPanel {
 		ImageIcon raw = new ImageIcon(url);
 		return new ImageIcon(raw.getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH));
 	}
-	public String getInviteCode() {
-		return inviteCode;
-	}
 }
+
