@@ -13,15 +13,6 @@ import pages.InviteReady;
 import pages.TeamTodoList;
 import pages.AddTask;
 
-
-
-
-
-
-
-
-
-//uuhh88233 
 public class AppFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
