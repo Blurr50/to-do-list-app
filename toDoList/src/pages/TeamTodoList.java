@@ -201,13 +201,13 @@ public class TeamTodoList extends JPanel {
 		navMine.setBounds(15, 140, 156, 36);
 		sidebar.add(navMine);
 
-		navPeople = new NavItem("\u263A", "Team", "0", false);
-		navPeople.setBounds(15, 183, 156, 36);
-		sidebar.add(navPeople);
-
 		navDone = new NavItem("\u2714", "Completed", "0", false);
-		navDone.setBounds(15, 226, 156, 36);
+		navDone.setBounds(15, 183, 156, 36);
 		sidebar.add(navDone);
+		
+		navPeople = new NavItem("\u263A", "Team Info", "0", false);
+		navPeople.setBounds(15, 226, 156, 36);
+		sidebar.add(navPeople);
 
 		navTeam.addMouseListener(new MouseAdapter() {
 			@Override
