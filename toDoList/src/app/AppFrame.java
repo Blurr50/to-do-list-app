@@ -12,7 +12,7 @@ import pages.JoinList;
 import pages.InviteReady;
 import pages.TeamTodoList;
 import pages.AddTask;
-//Test 2 to see if this saves or not 
+
 public class AppFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -178,4 +178,3 @@ public class AppFrame extends JFrame {
 		});
 	}
 }
-
