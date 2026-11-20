@@ -1,88 +1,119 @@
 package testing;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InOrder;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
 import database.DatabaseManager;
 
-/**
- * Requires JUnit 5 and Mockito 5+ (or mockito-inline on Mockito 4) for
- * static/constructor mocking. Runs fine in a headless environment because
- * AppFrame is never really constructed.
- */
 class MainTest {
 
-	/** Makes SwingUtilities.invokeLater run immediately on the calling thread,
-	 *  so thread-local Mockito mocks (construction mocks) apply to the lambda. */
-	private static void runInvokeLaterImmediately(MockedStatic<SwingUtilities> swing) {
-		swing.when(() -> SwingUtilities.invokeLater(any(Runnable.class)))
-				.thenAnswer(inv -> {
-					((Runnable) inv.getArgument(0)).run();
-					return null;
-				});
-	}
+    private Runnable originalExitHandler;
+    private Runnable mockExitHandler;
 
-	@Test
-	void main_initializesDatabase_thenShowsFrame() {
-		try (MockedStatic<DatabaseManager> db = mockStatic(DatabaseManager.class);
-				MockedStatic<SwingUtilities> swing = mockStatic(SwingUtilities.class);
-				MockedConstruction<app.AppFrame> frames = mockConstruction(app.AppFrame.class)) {
+    @BeforeEach
+    void replaceExitHandler() {
+        originalExitHandler = app.Main.exitHandler;
+        mockExitHandler = mock(Runnable.class);
+        app.Main.exitHandler = mockExitHandler;
+    }
 
-			runInvokeLaterImmediately(swing);
+    @AfterEach
+    void restoreExitHandler() {
+    	app.Main.exitHandler = originalExitHandler;
+    }
 
-			app.Main.main(new String[0]);
+    @Test
+    void main_whenDatabaseInitializes_schedulesFrameOnSwingThread() {
+        try (MockedStatic<DatabaseManager> db = mockStatic(DatabaseManager.class);
+             MockedStatic<SwingUtilities> swing = mockStatic(SwingUtilities.class);
+             MockedStatic<JOptionPane> pane = mockStatic(JOptionPane.class)) {
 
-			db.verify(DatabaseManager::initialize);
-			assertEquals(1, frames.constructed().size(), "exactly one AppFrame should be created");
-			verify(frames.constructed().get(0)).setVisible(true);
+        	app.Main.main(new String[0]);
 
-			// DB must be ready before any UI work is scheduled
-			InOrder order = inOrder(DatabaseManager.class, SwingUtilities.class);
-			order.verify(db, () -> DatabaseManager.initialize());
-		}
-	}
+            db.verify(DatabaseManager::initialize);
+            swing.verify(() -> SwingUtilities.invokeLater(any(Runnable.class)));
+            pane.verifyNoInteractions();
+            verify(mockExitHandler, never()).run();
+        }
+    }
 
-	@Test
-	void main_whenDatabaseInitFails_propagatesAndDoesNotCreateFrame() {
-		try (MockedStatic<DatabaseManager> db = mockStatic(DatabaseManager.class);
-				MockedStatic<SwingUtilities> swing = mockStatic(SwingUtilities.class);
-				MockedConstruction<app.AppFrame> frames = mockConstruction(app.AppFrame.class)) {
+    @Test
+    void main_runnablePassedToInvokeLater_createsAndShowsAppFrame() {
+        try (MockedStatic<DatabaseManager> db = mockStatic(DatabaseManager.class);
+             MockedStatic<SwingUtilities> swing = mockStatic(SwingUtilities.class);
+             MockedConstruction<app.AppFrame> frames = mockConstruction(app.AppFrame.class)) {
 
-			db.when(DatabaseManager::initialize).thenThrow(new RuntimeException("db down"));
-			runInvokeLaterImmediately(swing);
+        	app.Main.main(new String[0]);
 
-			RuntimeException ex = assertThrows(RuntimeException.class, () -> app.Main.main(new String[0]));
-			
+            ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+            swing.verify(() -> SwingUtilities.invokeLater(captor.capture()));
 
-			assertEquals("db down", ex.getMessage());
-			assertEquals(0, frames.constructed().size(), "no UI should be created if DB init fails");
-			swing.verifyNoInteractions();
-		}
-	}
+            // Nothing is built until the EDT runs the runnable
+            assertEquals(0, frames.constructed().size());
 
-	@Test
-	void main_ignoresCommandLineArguments() {
-		try (MockedStatic<DatabaseManager> db = mockStatic(DatabaseManager.class);
-				MockedStatic<SwingUtilities> swing = mockStatic(SwingUtilities.class);
-				MockedConstruction<app.AppFrame> frames = mockConstruction(app.AppFrame.class)) {
+            captor.getValue().run();
 
-			runInvokeLaterImmediately(swing);
+            assertEquals(1, frames.constructed().size());
+            verify(frames.constructed().get(0)).setVisible(true);
+        }
+    }
 
-			app.Main.main(new String[] { "--unknown", "x" });
+    @Test
+    void main_whenDatabaseFails_showsErrorDialogAndInvokesExitHandler() {
+        try (MockedStatic<DatabaseManager> db = mockStatic(DatabaseManager.class);
+             MockedStatic<SwingUtilities> swing = mockStatic(SwingUtilities.class);
+             MockedStatic<JOptionPane> pane = mockStatic(JOptionPane.class)) {
 
-			assertEquals(1, frames.constructed().size());
-		}
-	}
+            db.when(DatabaseManager::initialize).thenThrow(new RuntimeException("boom"));
+
+            app.Main.main(new String[0]);
+
+            pane.verify(() -> JOptionPane.showMessageDialog(
+                    null,
+                    "Could not start: boom",
+                    "Startup error",
+                    JOptionPane.ERROR_MESSAGE));
+            verify(mockExitHandler).run();
+        }
+    }
+
+    @Test
+    void main_whenDatabaseFails_doesNotScheduleFrame() {
+        try (MockedStatic<DatabaseManager> db = mockStatic(DatabaseManager.class);
+             MockedStatic<SwingUtilities> swing = mockStatic(SwingUtilities.class);
+             MockedStatic<JOptionPane> pane = mockStatic(JOptionPane.class);
+             MockedConstruction<app.AppFrame> frames = mockConstruction(app.AppFrame.class)) {
+
+            db.when(DatabaseManager::initialize).thenThrow(new RuntimeException("boom"));
+
+            app.Main.main(new String[0]);
+
+            // The `return` after exitHandler.run() matters because the handler is a mock
+            // and doesn't actually terminate the JVM.
+            swing.verify(() -> SwingUtilities.invokeLater(any(Runnable.class)), never());
+            assertEquals(0, frames.constructed().size());
+        }
+    }
+
+    @Test
+    void exitHandler_defaultIsNotNull() {
+    	app.Main.exitHandler = originalExitHandler;
+        // Only checks that a default exists; invoking it would call System.exit(1).
+        assertEquals(true, app.Main.exitHandler != null);
+    }
 }

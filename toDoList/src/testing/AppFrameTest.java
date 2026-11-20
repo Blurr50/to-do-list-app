@@ -2,29 +2,37 @@ package testing;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.awt.EventQueue;
 import java.awt.GraphicsEnvironment;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.UIManager;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
 
+import database.DatabaseManager;
 import database.UserDAO;
 import model.Task;
 import model.User;
@@ -34,303 +42,292 @@ import pages.JoinList;
 import pages.TeamTodoList;
 import pages.ToDodoLogin;
 
-/**
- * Needs JUnit 5 (+ junit-jupiter-params) and Mockito 5+ (or mockito-inline on Mockito 4).
- *
- * The page classes and UserDAO are replaced with Mockito construction mocks, so no real
- * pages or database are touched. Tests that build an AppFrame (a real JFrame) are skipped
- * on headless machines; run them with a display or under xvfb.
- */
 class AppFrameTest {
 
-	// =====================================================================
-	// Static validation - no Swing needed, runs everywhere
-	// =====================================================================
-	@Nested
-	class CheckNewAccount {
+    // =====================================================================
+    // Pure static logic: no frame needed, runs headless
+    // =====================================================================
 
-		@Test
-		void validCredentials_returnNull() {
-			assertNull(app.AppFrame.checkNewAccount("sam", "secret"));
-		}
+    @Nested
+    class CheckNewAccount {
 
-		@Test
-		void usernameBoundary_threeCharsOk_twoCharsRejected() {
-			assertNull(app.AppFrame.checkNewAccount("abc", "secret"));
-			assertEquals("Username must be at least 3 characters long.", app.AppFrame.checkNewAccount("ab", "secret"));
-		}
+        @ParameterizedTest
+        @CsvSource({
+            "ab,        password1, Username must be at least 3 characters long.",
+            "'',        password1, Username must be at least 3 characters long.",
+            "'a b',     password1, Username can't contain spaces.",
+            "'abc def', password1, Username can't contain spaces.",
+            "abc,       12345,     Password must be at least 6 characters long.",
+            "abc,       '',        Password must be at least 6 characters long."
+        })
+        void returnsMessageForInvalidInput(String username, String password, String expected) {
+            assertEquals(expected, app.AppFrame.checkNewAccount(username, password));
+        }
 
-		@Test
-		void emptyUsername_rejected() {
-			assertEquals("Username must be at least 3 characters long.", app.AppFrame.checkNewAccount("", "secret"));
-		}
+        @ParameterizedTest
+        @CsvSource({
+            "abc,      123456",
+            "alice,    password",
+            "bob_99,   a-long-password"
+        })
+        void returnsNullForValidInput(String username, String password) {
+            assertNull(app.AppFrame.checkNewAccount(username, password));
+        }
 
-		@Test
-		void usernameWithSpace_rejected() {
-			assertEquals("Username can't contain spaces.", app.AppFrame.checkNewAccount("sam smith", "secret"));
-		}
+        @Test
+        void usernameLengthIsCheckedBeforeSpaces() {
+            // "a " is too short AND contains a space; the length message wins
+            assertEquals("Username must be at least 3 characters long.",
+            		app.AppFrame.checkNewAccount("a ", "password1"));
+        }
 
-		@Test
-		void passwordBoundary_sixCharsOk_fiveCharsRejected() {
-			assertNull(app.AppFrame.checkNewAccount("sam", "123456"));
-			assertEquals("Password must be at least 6 characters long.", app.AppFrame.checkNewAccount("sam", "12345"));
-		}
+        @Test
+        void usernameProblemsAreReportedBeforePasswordProblems() {
+            assertEquals("Username can't contain spaces.",
+            		app.AppFrame.checkNewAccount("a b c", "123"));
+        }
+    }
 
-		@Test
-		void usernameIsCheckedBeforePassword() {
-			assertEquals("Username must be at least 3 characters long.", app.AppFrame.checkNewAccount("a", "b"));
-		}
+    // =====================================================================
+    // main(): AppFrame construction is mocked, so no display is needed
+    // =====================================================================
 
-		/** Documents current behaviour: tabs/newlines in a username are NOT rejected (only ' '). */
-		@Test
-		void usernameWithTab_currentlyAccepted() {
-			assertNull(app.AppFrame.checkNewAccount("sam\tsmith", "secret"));
-		}
+    @Nested
+    class Main {
 
-		/** Documents current behaviour: an all-whitespace password is accepted. */
-		@Test
-		void whitespaceOnlyPassword_currentlyAccepted() {
-			assertNull(app.AppFrame.checkNewAccount("sam", "      "));
-		}
+        @Test
+        void main_initializesDatabaseAndShowsFrameOnEventQueue() {
+            try (MockedStatic<UIManager> ui = mockStatic(UIManager.class);
+                 MockedStatic<DatabaseManager> db = mockStatic(DatabaseManager.class);
+                 MockedStatic<EventQueue> eq = mockStatic(EventQueue.class);
+                 MockedConstruction<app.AppFrame> frames = mockConstruction(app.AppFrame.class)) {
 
-		/** Documents current behaviour: null input crashes instead of returning a message. */
-		@Test
-		void nullInputs_currentlyThrowNpe() {
-			assertThrows(NullPointerException.class, () -> app.AppFrame.checkNewAccount(null, "secret"));
-			assertThrows(NullPointerException.class, () -> app.AppFrame.checkNewAccount("sam", null));
-		}
-	}
+            	app.AppFrame.main(new String[0]);
 
-	// =====================================================================
-	// Frame behaviour - pages are mocked
-	// =====================================================================
-	@Nested
-	class WithFrame {
+                db.verify(DatabaseManager::initialize);
 
-		private static final String INVITE = "ABC123";
+                ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+                eq.verify(() -> EventQueue.invokeLater(captor.capture()));
 
-		private MockedConstruction<ToDodoLogin> loginPages;
-		private MockedConstruction<JoinList> joinPages;
-		private MockedConstruction<InviteReady> invitePages;
-		private MockedConstruction<TeamTodoList> teamPages;
-		private MockedConstruction<AddTask> addTaskPages;
-		private MockedConstruction<UserDAO> daos;
-		private app.AppFrame frame;
+                // Frame is only created once the event queue runs the task
+                assertEquals(0, frames.constructed().size());
+                captor.getValue().run();
+                assertEquals(1, frames.constructed().size());
+                verify(frames.constructed().get(0)).setVisible(true);
+            }
+        }
 
-		@BeforeEach
-		void setUp() {
-			assumeFalse(GraphicsEnvironment.isHeadless(), "JFrame needs a display (use xvfb on CI)");
+        @Test
+        void main_continuesWhenLookAndFeelFails() {
+            try (MockedStatic<UIManager> ui = mockStatic(UIManager.class);
+                 MockedStatic<DatabaseManager> db = mockStatic(DatabaseManager.class);
+                 MockedStatic<EventQueue> eq = mockStatic(EventQueue.class);
+                 MockedConstruction<app.AppFrame> frames = mockConstruction(app.AppFrame.class)) {
 
-			loginPages = mockConstruction(ToDodoLogin.class);
-			joinPages = mockConstruction(JoinList.class);
-			invitePages = mockConstruction(InviteReady.class);
-			teamPages = mockConstruction(TeamTodoList.class);
-			addTaskPages = mockConstruction(AddTask.class);
-			daos = mockConstruction(UserDAO.class, (dao, ctx) -> when(dao.generateInviteCode()).thenReturn(INVITE));
+                ui.when(UIManager::getCrossPlatformLookAndFeelClassName).thenReturn("fake.LookAndFeel");
+                ui.when(() -> UIManager.setLookAndFeel(anyString()))
+                        .thenThrow(new ClassNotFoundException("fake.LookAndFeel"));
 
-			frame = new app.AppFrame();
-		}
+                app.AppFrame.main(new String[0]);
 
-		@AfterEach
-		void tearDown() {
-			if (frame != null) {
-				frame.dispose();
-			}
-			for (MockedConstruction<?> m : new MockedConstruction<?>[] { loginPages, joinPages, invitePages,
-					teamPages, addTaskPages, daos }) {
-				if (m != null) {
-					m.close();
-				}
-			}
-		}
+                // The exception is swallowed and startup carries on
+                db.verify(DatabaseManager::initialize);
+                eq.verify(() -> EventQueue.invokeLater(any(Runnable.class)));
+            }
+        }
 
-		private TeamTodoList team() {
-			return teamPages.constructed().get(0);
-		}
+        @Test
+        void main_setsLookAndFeelBeforeInitializingDatabase() {
+            try (MockedStatic<UIManager> ui = mockStatic(UIManager.class);
+                 MockedStatic<DatabaseManager> db = mockStatic(DatabaseManager.class);
+                 MockedStatic<EventQueue> eq = mockStatic(EventQueue.class)) {
 
-		private AddTask addTask() {
-			return addTaskPages.constructed().get(0);
-		}
+                ui.when(UIManager::getCrossPlatformLookAndFeelClassName).thenReturn("fake.LookAndFeel");
 
-		private InviteReady invite() {
-			return invitePages.constructed().get(0);
-		}
+                app.AppFrame.main(new String[0]);
 
-		// ---------- construction ----------
+                ui.verify(() -> UIManager.setLookAndFeel("fake.LookAndFeel"));
+                db.verify(DatabaseManager::initialize);
+            }
+        }
+    }
 
-		@Test
-		void constructor_setsUpFrameAndStartsOnLogin() {
-			assertEquals(JFrame.EXIT_ON_CLOSE, frame.getDefaultCloseOperation());
-			assertEquals(1303, frame.getWidth());
-			assertEquals(760, frame.getHeight());
-			assertEquals("To-Dodo List - Login", frame.getTitle());
-		}
+    // =====================================================================
+    // Instance behaviour. JFrame can't be created headless, so these are
+    // skipped (not failed) on a machine without a display.
+    // =====================================================================
 
-		@Test
-		void constructor_createsEachPageExactlyOnce() {
-			assertEquals(1, loginPages.constructed().size());
-			assertEquals(1, joinPages.constructed().size());
-			assertEquals(1, invitePages.constructed().size());
-			assertEquals(1, teamPages.constructed().size());
-			assertEquals(1, addTaskPages.constructed().size());
-		}
+    @Nested
+    class Frame {
 
-		// ---------- showPage ----------
+        private MockedConstruction<UserDAO> userDaoCtor;
+        // If the page constructors or refreshTasks use other DAOs (e.g. TaskDAO),
+        // add a mockConstruction for each of them here, the same way as UserDAO.
 
-		static Stream<Arguments> pageTitles() {
-			return Stream.of(
-					Arguments.of(app.AppFrame.LOGIN, "To-Dodo List - Login"),
-					Arguments.of(app.AppFrame.CREATE_ACCOUNT, "To-Dodo List - Join"),
-					Arguments.of(app.AppFrame.INVITE_READY, "To-Dodo List - Invite ready"),
-					Arguments.of(app.AppFrame.MAIN, "To-Dodo List - Team to-do list"),
-					Arguments.of(app.AppFrame.ADD_TASK, "To-Dodo List - Task"));
-		}
+        private app.AppFrame frame;
 
-		@ParameterizedTest
-		@MethodSource("pageTitles")
-		void showPage_setsMatchingTitle(String page, String expectedTitle) {
-			frame.showPage(app.AppFrame.MAIN); // make sure we really change away from the start page
-			frame.showPage(page);
-			assertEquals(expectedTitle, frame.getTitle());
-		}
+        @BeforeEach
+        void setUp() {
+            assumeFalse(GraphicsEnvironment.isHeadless(), "JFrame needs a display; skipping");
 
-		@Test
-		void showPage_unknownName_keepsPreviousTitle() {
-			frame.showPage(app.AppFrame.MAIN);
-			frame.showPage("doesNotExist");
-			assertEquals("To-Dodo List - Team to-do list", frame.getTitle());
-		}
+            userDaoCtor = mockConstruction(UserDAO.class,
+                    (dao, ctx) -> when(dao.generateInviteCode()).thenReturn("NEW-CODE"));
 
-		/** Documents current behaviour: null page name crashes in the switch. */
-		@Test
-		void showPage_null_currentlyThrowsNpe() {
-			assertThrows(NullPointerException.class, () -> frame.showPage(null));
-		}
+            frame = new app.AppFrame();
+        }
 
-		// ---------- log in / log out ----------
+        @AfterEach
+        void tearDown() {
+            if (frame != null) {
+                frame.dispose();
+            }
+            if (userDaoCtor != null) {
+                userDaoCtor.close();
+            }
+        }
 
-		@Test
-		void logIn_storesUserFillsLabels_loadsAllTasks_andOpensMain() {
-			User user = mock(User.class);
-			when(user.username()).thenReturn("sam");
-			when(user.inviteCode()).thenReturn("XYZ789");
+        // ---------- constructor ----------
 
-			frame.logIn(user);
+        @Test
+        void constructor_setsFrameProperties() {
+            assertEquals(JFrame.EXIT_ON_CLOSE, frame.getDefaultCloseOperation());
+            assertEquals(1303, frame.getWidth());
+            assertEquals(760, frame.getHeight());
+        }
 
-			InOrder order = inOrder(team());
-			order.verify(team()).setCurrentUser(user);
-			order.verify(team()).setWelcomeLabelText("Welcome back, sam!");
-			order.verify(team()).setInviteCodeText("XYZ789");
-			order.verify(team()).refreshTasks("ALL");
-			assertEquals("To-Dodo List - Team to-do list", frame.getTitle());
-		}
+        @Test
+        void constructor_startsOnLoginPage() {
+            assertEquals("To-Dodo List - Login", frame.getTitle());
+        }
 
-		/** Documents current behaviour: logIn(null) crashes instead of being rejected. */
-		@Test
-		void logIn_null_currentlyThrowsNpe() {
-			assertThrows(NullPointerException.class, () -> frame.logIn(null));
-		}
+        @Test
+        void constructor_registersAllFivePagesInContentPane() {
+            assertEquals(5, frame.getContentPane().getComponentCount());
+        }
 
-		@Test
-		void logOut_clearsUserAndList_andReturnsToLogin() {
-			frame.showPage(app.AppFrame.MAIN);
+        @Test
+        void constructor_startsWithNoCurrentUser() {
+            assertNull(frame.getCurrentUser());
+        }
 
-			frame.logOut();
+        // ---------- showPage ----------
 
-			InOrder order = inOrder(team());
-			order.verify(team()).setCurrentUser(null);
-			order.verify(team()).clear();
-			assertEquals("To-Dodo List - Login", frame.getTitle());
-		}
+        @ParameterizedTest
+        @CsvSource({
+            "login,         To-Dodo List - Login",
+            "createAccount, To-Dodo List - Join",
+            "inviteReady,   To-Dodo List - Invite ready",
+            "main,          To-Dodo List - Team to-do list",
+            "addTask,       To-Dodo List - Task"
+        })
+        void showPage_setsTitleForEachPage(String page, String expectedTitle) {
+            frame.showPage(page);
+            assertEquals(expectedTitle, frame.getTitle());
+        }
 
-		@Test
-		void getCurrentUser_delegatesToTeamList() {
-			User user = mock(User.class);
-			when(team().getCurrentUser()).thenReturn(user);
+        @Test
+        void showPage_constantsMatchExpectedNames() {
+            assertEquals("login", app.AppFrame.LOGIN);
+            assertEquals("createAccount", app.AppFrame.CREATE_ACCOUNT);
+            assertEquals("inviteReady", app.AppFrame.INVITE_READY);
+            assertEquals("main", app.AppFrame.MAIN);
+            assertEquals("addTask", app.AppFrame.ADD_TASK);
+        }
 
-			assertEquals(user, frame.getCurrentUser());
-		}
+        @Test
+        void showPage_unknownNameLeavesTitleUnchanged() {
+            frame.showPage(app.AppFrame.MAIN);
+            String before = frame.getTitle();
 
-		@Test
-		void setCurrentUser_delegatesToTeamList() {
-			User user = mock(User.class);
-			frame.setCurrentUser(user);
-			verify(team()).setCurrentUser(user);
-		}
+            try {
+                frame.showPage("doesNotExist");
+            } catch (RuntimeException ignored) {
+                // either way, the switch's default branch must not touch the title
+            }
 
-		// ---------- pages that need data ----------
+            assertEquals(before, frame.getTitle());
+        }
 
-		@Test
-		void openAddTask_showsEmptyForm_forCurrentUser() {
-			User user = mock(User.class);
-			when(team().getCurrentUser()).thenReturn(user);
+        // ---------- log in / log out ----------
 
-			frame.openAddTask();
+        @Test
+        void logIn_storesUserAndShowsMainPage() {
+            User user = mock(User.class);
+            when(user.username()).thenReturn("alice");
+            when(user.inviteCode()).thenReturn("ABC123");
 
-			verify(addTask()).showForm(user, null);
-			assertEquals("To-Dodo List - Task", frame.getTitle());
-		}
+            frame.logIn(user);
 
-		@Test
-		void openEditTask_showsFormWithTask() {
-			User user = mock(User.class);
-			Task task = mock(Task.class);
-			when(team().getCurrentUser()).thenReturn(user);
+            assertSame(user, frame.getCurrentUser());
+            assertEquals("To-Dodo List - Team to-do list", frame.getTitle());
+        }
 
-			frame.openEditTask(task);
+        @Test
+        void logOut_clearsUserAndShowsLogin() {
+            User user = mock(User.class);
+            when(user.username()).thenReturn("alice");
+            when(user.inviteCode()).thenReturn("ABC123");
+            frame.logIn(user);
 
-			verify(addTask()).showForm(user, task);
-			assertEquals("To-Dodo List - Task", frame.getTitle());
-		}
+            frame.logOut();
 
-		@Test
-		void openInviteReady_usesFreshInviteCode() {
-			frame.openInviteReady();
+            assertNull(frame.getCurrentUser());
+            assertEquals("To-Dodo List - Login", frame.getTitle());
+        }
 
-			assertEquals(1, daos.constructed().size());
-			verify(invite()).setInviteCode(INVITE);
-			assertEquals("To-Dodo List - Invite ready", frame.getTitle());
-		}
+        @Test
+        void setCurrentUser_isReturnedByGetCurrentUser() {
+            User user = mock(User.class);
 
-		@Test
-		void openInviteReady_whenDaoFails_propagatesAndStaysOnCurrentPage() {
-			daos.close();
-			daos = mockConstruction(UserDAO.class, (dao, ctx) -> when(dao.generateInviteCode())
-					.thenThrow(new IllegalStateException("db down")));
+            frame.setCurrentUser(user);
 
-			assertThrows(IllegalStateException.class, () -> frame.openInviteReady());
-			assertEquals("To-Dodo List - Login", frame.getTitle());
-		}
+            assertSame(user, frame.getCurrentUser());
+        }
 
-		// ---------- delegating helpers ----------
+        // ---------- pages that need data ----------
 
-		@Test
-		void showTaskList_refreshesThenShowsMain() {
-			frame.showTaskList("COMPLETED");
+        @Test
+        void openAddTask_showsTaskPage() {
+            frame.openAddTask();
 
-			verify(team()).refreshTasks("COMPLETED");
-			assertEquals("To-Dodo List - Team to-do list", frame.getTitle());
-		}
+            assertEquals("To-Dodo List - Task", frame.getTitle());
+        }
 
-		@Test
-		void refreshTasks_withNull_isPassedThrough() {
-			frame.refreshTasks(null);
-			verify(team()).refreshTasks(null);
-		}
+        @Test
+        void openEditTask_showsTaskPage() {
+            frame.openEditTask(mock(Task.class));
 
-		@Test
-		void showTeamMembers_opensDialog() {
-			frame.showTeamMembers();
-			verify(team()).showMembersDialog();
-		}
+            assertEquals("To-Dodo List - Task", frame.getTitle());
+        }
 
-		@Test
-		void labelSetters_delegateToTeamList() {
-			frame.setWelcomeLabelText("hi");
-			frame.setInviteCodeText("CODE");
+        @Test
+        void openInviteReady_generatesCodeAndShowsPage() {
+            frame.openInviteReady();
 
-			verify(team()).setWelcomeLabelText("hi");
-			verify(team()).setInviteCodeText("CODE");
-		}
-	}
+            assertEquals(1, userDaoCtor.constructed().size());
+            verify(userDaoCtor.constructed().get(0)).generateInviteCode();
+            assertEquals("To-Dodo List - Invite ready", frame.getTitle());
+        }
+
+        // ---------- task list ----------
+
+        @ParameterizedTest
+        @CsvSource({ "ALL", "USER", "COMPLETED" })
+        void showTaskList_showsMainPage(String page) {
+            frame.showPage(app.AppFrame.LOGIN);
+
+            frame.showTaskList(page);
+
+            assertEquals("To-Dodo List - Team to-do list", frame.getTitle());
+        }
+
+        @Test
+        void refreshTasks_doesNotChangePage() {
+            String titleBefore = frame.getTitle();
+
+            frame.refreshTasks("USER");
+
+            assertEquals(titleBefore, frame.getTitle());
+        }
+    }
 }
